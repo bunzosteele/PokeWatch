@@ -1,1 +1,42 @@
-*.agdai
+# ignore various output files
+*.resources
+
+# NuGet Packages Directory
+packages/*
+!packages/repositories.config
+!packages/NuGet.CommandLine*/
+!packages/NuGet.CommandLine*/*
+
+# ignore output folders
+bin/
+Bin/
+build/
+obj/
+ipch/
+GeneratedCode/
+Setup/
+Backup/
+_UpgradeReport_Files
+
+# ignore user-specific options/cache files
+_ReSharper.*
+StyleCop.Cache
+Thumbs.db
+*.csproj.user
+*.DotSettings.user
+*.opensdf
+*.[Rr]e[Ss]harper.user
+*.sdf
+*.sln.cache
+*.suo
+*.vcxproj.user
+*.mode1v3
+!default.mode1v3
+*.pbxuser
+!default.pbxuser
+*.perspectivev3
+*.pidb
+*.userprefs
+*.tmp
+UpgradeLog.*
+
