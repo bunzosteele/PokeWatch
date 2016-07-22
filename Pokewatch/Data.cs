@@ -12,6 +12,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Whatcom Falls",
+				Preface = "at",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.751776, Longitude = -122.429340},
@@ -24,6 +25,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Bloedel Donovan Park",
+				Preface = "in",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.760950, Longitude = -122.419008},
@@ -33,6 +35,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Bellingham Marina",
+				Preface = "near the",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.753948, Longitude = -122.496942},
@@ -47,35 +50,45 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Boulevard Park",
+				Preface = "at",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.727091, Longitude = -122.505178},
 					new Location {Latitude = 48.731160, Longitude = -122.502614},
 					new Location {Latitude = 48.733099, Longitude = -122.500071},
+					new Location {Latitude = 48.728541, Longitude = -122.502859},
+					new Location {Latitude = 48.725349, Longitude = -122.505230},
 				}
 			},
 			new Region
 			{
 				Name = "Maritime Heritage Park",
+				Preface = "in",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.755100, Longitude = -122.483008},
 					new Location {Latitude = 48.754091, Longitude = -122.482430},
 					new Location {Latitude = 48.753114, Longitude = -122.483119},
+					new Location { Latitude = 48.753799, Longitude = -122.484706},
+new Location { Latitude = 48.752250, Longitude = -122.483955},
 				}
 			},
 			new Region
 			{
 				Name = "Elizabeth Park",
+				Preface = "at",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.760314, Longitude = -122.491294},
 					new Location {Latitude = 48.759699, Longitude = -122.490092},
+					new Location { Latitude = 48.760591, Longitude = -122.489636},
+new Location { Latitude = 48.759470, Longitude = -122.491750},
 				}
 			},
 			new Region
 			{
 				Name = "Bellingham Highschool",
+				Preface = "around",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.757564, Longitude = -122.474716},
@@ -87,26 +100,28 @@ namespace Pokewatch
 			},
 			new Region
 			{
-				Name = "Downtown",
+				Name = "Downtown area",
+				Preface = "in the",
 				Locations = new List<Location>
 				{
-					new Location {Latitude = 48.746473, Longitude = -122.479566},
-					new Location {Latitude = 48.747374, Longitude = -122.481131},
 					new Location {Latitude = 48.747813, Longitude = -122.478256},
 					new Location {Latitude = 48.748513, Longitude = -122.479576},
 					new Location {Latitude = 48.749277, Longitude = -122.478138},
 					new Location {Latitude = 48.750331, Longitude = -122.476668},
 					new Location {Latitude = 48.749831, Longitude = -122.474853},
 					new Location {Latitude = 48.747863, Longitude = -122.476363},
-					new Location {Latitude = 48.751622, Longitude = -122.480606},
 					new Location {Latitude = 48.750130, Longitude = -122.479780},
 					new Location {Latitude = 48.751620, Longitude = -122.479030},
 					new Location {Latitude = 48.751303, Longitude = -122.476941},
+					new Location { Latitude = 48.749645, Longitude = -122.481507},
+new Location { Latitude = 48.746031, Longitude = -122.477333},
+new Location { Latitude = 48.746441, Longitude = -122.473814},
 				}
 			},
 			new Region
 			{
 				Name = "Sehome Village",
+				Preface = "near",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.732832, Longitude = -122.470581},
@@ -116,22 +131,21 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Western Washington University",
+				Preface = "at",
 				Locations = new List<Location>
 				{
-					new Location {Latitude = 48.739702, Longitude = -122.483944},
-					new Location {Latitude = 48.738690, Longitude = -122.484738},
-					new Location {Latitude = 48.737975, Longitude = -122.486712},
-					new Location {Latitude = 48.736751, Longitude = -122.485210},
-					new Location {Latitude = 48.735929, Longitude = -122.487793},
-					new Location {Latitude = 48.735023, Longitude = -122.486194},
-					new Location {Latitude = 48.733778, Longitude = -122.486430},
-					new Location {Latitude = 48.732660, Longitude = -122.486301},
-					new Location {Latitude = 48.731782, Longitude = -122.487395},
+					new Location { Latitude = 48.739805, Longitude = -122.484082},
+new Location { Latitude = 48.738553, Longitude = -122.484962},
+new Location { Latitude = 48.732693, Longitude = -122.485981},
+new Location { Latitude = 48.734030, Longitude = -122.486142},
+new Location { Latitude = 48.735466, Longitude = -122.485970},
+	new Location { Latitude = 48.738128, Longitude = -122.487483},
 				}
 			},
 			new Region
 			{
 				Name = "Marine Park",
+				Preface = "near",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.719128, Longitude = -122.515809},
@@ -142,6 +156,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Cornwall Park",
+				Preface = "in",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.770677, Longitude = -122.481795},
@@ -156,6 +171,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Squalicum Creek Park",
+				Preface = "at",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.766664, Longitude = -122.500923},
@@ -168,6 +184,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Bellis Fair Mall",
+				Preface = "near the",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.784848, Longitude = -122.493328},
@@ -179,6 +196,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Fairhaven",
+				Preface = "in",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.721276, Longitude = -122.504045},
@@ -192,6 +210,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Bayview Cemetary",
+				Preface = "around the",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.746803, Longitude = -122.442934},
@@ -204,6 +223,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Civic Sports Center",
+				Preface = "at the",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.745187, Longitude = -122.459802},
@@ -218,6 +238,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Rock Hill Park",
+				Preface = "near",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.745703, Longitude = -122.466807},
@@ -226,6 +247,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Broadway Park",
+				Preface = "around",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.764957, Longitude = -122.479395},
@@ -235,7 +257,8 @@ namespace Pokewatch
 			},
 			new Region
 			{
-				Name = "Sunset plaza",
+				Name = "Sunset Plaza",
+				Preface = "near the",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.774432, Longitude = -122.463641},
@@ -252,6 +275,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Barkley Village",
+				Preface = "around",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.770328, Longitude = -122.448739},
@@ -266,6 +290,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Northridge Park",
+				Preface = "at",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.772666, Longitude = -122.423314},
@@ -278,6 +303,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Bellingham Technical College",
+				Preface = "around",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.764382, Longitude = -122.508264},
@@ -291,6 +317,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Whatcom Community College",
+				Preface = "around",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.794382, Longitude = -122.493322},
@@ -304,6 +331,7 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Bellingham International Airport",
+				Preface = "by the",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.798087, Longitude = -122.532905},
@@ -312,6 +340,125 @@ namespace Pokewatch
 					new Location {Latitude = 48.789392, Longitude = -122.532679},
 					new Location {Latitude = 48.787285, Longitude = -122.527731},
 					new Location {Latitude = 48.784324, Longitude = -122.523444},
+				}
+			},
+			new Region
+			{
+				Name = "Flatiron Building",
+				Preface = "near the",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.751622, Longitude = -122.480606},
+				}
+			},
+			new Region
+			{
+				Name = "Farmers Market",
+				Preface = "near the",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.747374, Longitude = -122.481131},
+new Location { Latitude = 48.746473, Longitude = -122.479566},
+new Location { Latitude = 48.746412, Longitude = -122.481400},
+				}
+			},
+			new Region
+			{
+				Name = "Aslan Brewing",
+				Preface = "near",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.748414, Longitude = -122.474694},
+				}
+			},
+			new Region
+			{
+				Name = "The Copper Hog",
+				Preface = "near",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.749228, Longitude = -122.476175},
+				}
+			},
+			new Region
+			{
+				Name = "City Hall",
+				Preface = "around",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.754526, Longitude = -122.480005},
+new Location { Latitude = 48.754498, Longitude = -122.478181},
+new Location { Latitude = 48.755715, Longitude = -122.479726},
+new Location { Latitude = 48.756217, Longitude = -122.478020},
+				}
+			},
+			new Region
+			{
+				Name = "Home Skillet",
+				Preface = "by",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.757999, Longitude = -122.468192},
+				}
+			},
+			new Region
+			{
+				Name = "Kulshan Brewing",
+				Preface = "by",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.760192, Longitude = -122.464705},
+				}
+			},
+			new Region
+			{
+				Name = "Red Square",
+				Preface = "in the",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.736939, Longitude = -122.485455},
+				}
+			},
+			new Region
+			{
+				Name = "Ridgeway Commons",
+				Preface = "at the",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.733310, Longitude = -122.489951},
+new Location { Latitude = 48.734838, Longitude = -122.489050},
+				}
+			},
+			new Region
+			{
+				Name = "Wade King Rec Center",
+				Preface = "around the",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.731363, Longitude = -122.490155},
+new Location { Latitude = 48.731144, Longitude = -122.487655},
+new Location { Latitude = 48.732184, Longitude = -122.488631},
+				}
+			},
+			new Region
+			{
+				Name = "Fairhaven College",
+				Preface = "near",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.730364, Longitude = -122.485423},
+new Location { Latitude = 48.728878, Longitude = -122.486035},
+				}
+			},
+			new Region
+			{
+				Name = "Lowell Park",
+				Preface = "around",
+				Locations = new List<Location>
+				{
+					new Location { Latitude = 48.727293, Longitude = -122.493631},
+new Location { Latitude = 48.726479, Longitude = -122.492279},
+new Location { Latitude = 48.727633, Longitude = -122.490691},
 				}
 			},
 		};
@@ -334,20 +481,28 @@ namespace Pokewatch
 			PokemonType.NidoranMale,
 			PokemonType.Nidorino,
 			PokemonType.Clefary,
+			PokemonType.Jigglypuff,
 			PokemonType.Zubat,
 			PokemonType.Golbat,
 			PokemonType.Oddish,
+			PokemonType.Gloom,
 			PokemonType.Paras,
+			PokemonType.Parasect,
 			PokemonType.Venonat,
+			PokemonType.Venomoth,
+			PokemonType.Meowth,
 			PokemonType.Psyduck,
 			PokemonType.Poliwag,
 			PokemonType.Bellsprout,
+			PokemonType.Weepinbell,
 			PokemonType.Tentacool,
+			PokemonType.Tentacruel,
 			PokemonType.Seel,
 			PokemonType.Shellder,
 			PokemonType.Gastly,
 			PokemonType.Drowzee,
 			PokemonType.Krabby,
+			PokemonType.Kingler,
 			PokemonType.Horsea,
 			PokemonType.Goldeen,
 			PokemonType.Staryu,

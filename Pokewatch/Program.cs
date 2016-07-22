@@ -206,7 +206,7 @@ namespace Pokewatch
 		//Build a tweet with useful information about the pokemon, then cram in as many hashtags as will fit.
 		private static string ComposeTweet(FoundPokemon pokemon, Region region)
 		{
-			string tweet = $"A wild {SpellCheckPokemon(pokemon.Type)} appeared! It will be near {region.Name} for {pokemon.LifeExpectancy} more minutes. https://www.google.com/maps/place/{pokemon.Location.Latitude},{pokemon.Location.Longitude}";
+			string tweet = $"A wild {SpellCheckPokemon(pokemon.Type)} appeared! It will be {region.Preface} {region.Name} for {pokemon.LifeExpectancy} more minutes. https://www.google.com/maps/place/{pokemon.Location.Latitude},{pokemon.Location.Longitude}";
 			if (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Type, true)) < 140)
 				tweet += " #" + SpellCheckPokemon(pokemon.Type, true);
 
