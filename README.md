@@ -1,5 +1,6 @@
 # PokeWatch
 A twitter bot that uses the Pokemon Go API to find rare pokemon.
+Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 
 ##Usage
 * Replace OAuth Tokens/Secrets to authenticate your twitter account.
@@ -11,3 +12,5 @@ A twitter bot that uses the Pokemon Go API to find rare pokemon.
 
 ##Credits
 https://github.com/AeonLucid/POGOLib
+
+
