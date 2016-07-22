@@ -12,7 +12,8 @@ namespace Pokewatch
 			new Region
 			{
 				Name = "Whatcom Falls",
-				Preface = "at",
+				Preface = "at the",
+				Suffix = "park",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.751776, Longitude = -122.429340},
@@ -26,6 +27,7 @@ namespace Pokewatch
 			{
 				Name = "Bloedel Donovan Park",
 				Preface = "in",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.760950, Longitude = -122.419008},
@@ -36,6 +38,7 @@ namespace Pokewatch
 			{
 				Name = "Bellingham Marina",
 				Preface = "near the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.753948, Longitude = -122.496942},
@@ -51,6 +54,7 @@ namespace Pokewatch
 			{
 				Name = "Boulevard Park",
 				Preface = "at",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.727091, Longitude = -122.505178},
@@ -62,33 +66,36 @@ namespace Pokewatch
 			},
 			new Region
 			{
-				Name = "Maritime Heritage Park",
+				Name = "Maritime Heritage",
 				Preface = "in",
+				Suffix = "Park",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.755100, Longitude = -122.483008},
 					new Location {Latitude = 48.754091, Longitude = -122.482430},
 					new Location {Latitude = 48.753114, Longitude = -122.483119},
 					new Location { Latitude = 48.753799, Longitude = -122.484706},
-new Location { Latitude = 48.752250, Longitude = -122.483955},
+					new Location { Latitude = 48.752250, Longitude = -122.483955},
 				}
 			},
 			new Region
 			{
 				Name = "Elizabeth Park",
 				Preface = "at",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.760314, Longitude = -122.491294},
 					new Location {Latitude = 48.759699, Longitude = -122.490092},
 					new Location { Latitude = 48.760591, Longitude = -122.489636},
-new Location { Latitude = 48.759470, Longitude = -122.491750},
+					new Location { Latitude = 48.759470, Longitude = -122.491750},
 				}
 			},
 			new Region
 			{
 				Name = "Bellingham Highschool",
 				Preface = "around",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.757564, Longitude = -122.474716},
@@ -100,8 +107,9 @@ new Location { Latitude = 48.759470, Longitude = -122.491750},
 			},
 			new Region
 			{
-				Name = "Downtown area",
+				Name = "Downtown",
 				Preface = "in the",
+				Suffix = "area",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.747813, Longitude = -122.478256},
@@ -114,14 +122,15 @@ new Location { Latitude = 48.759470, Longitude = -122.491750},
 					new Location {Latitude = 48.751620, Longitude = -122.479030},
 					new Location {Latitude = 48.751303, Longitude = -122.476941},
 					new Location { Latitude = 48.749645, Longitude = -122.481507},
-new Location { Latitude = 48.746031, Longitude = -122.477333},
-new Location { Latitude = 48.746441, Longitude = -122.473814},
+					new Location { Latitude = 48.746031, Longitude = -122.477333},
+					new Location { Latitude = 48.746441, Longitude = -122.473814},
 				}
 			},
 			new Region
 			{
 				Name = "Sehome Village",
 				Preface = "near",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.732832, Longitude = -122.470581},
@@ -131,21 +140,23 @@ new Location { Latitude = 48.746441, Longitude = -122.473814},
 			new Region
 			{
 				Name = "Western Washington University",
-				Preface = "at",
+				Preface = "on the",
+				Suffix = "campus",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.739805, Longitude = -122.484082},
-new Location { Latitude = 48.738553, Longitude = -122.484962},
-new Location { Latitude = 48.732693, Longitude = -122.485981},
-new Location { Latitude = 48.734030, Longitude = -122.486142},
-new Location { Latitude = 48.735466, Longitude = -122.485970},
-	new Location { Latitude = 48.738128, Longitude = -122.487483},
+					new Location { Latitude = 48.738553, Longitude = -122.484962},
+					new Location { Latitude = 48.732693, Longitude = -122.485981},
+					new Location { Latitude = 48.734030, Longitude = -122.486142},
+					new Location { Latitude = 48.735466, Longitude = -122.485970},
+					new Location { Latitude = 48.738128, Longitude = -122.487483},
 				}
 			},
 			new Region
 			{
 				Name = "Marine Park",
 				Preface = "near",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.719128, Longitude = -122.515809},
@@ -155,8 +166,9 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			},
 			new Region
 			{
-				Name = "Cornwall Park",
+				Name = "Cornwall",
 				Preface = "in",
+				Suffix = "Park",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.770677, Longitude = -122.481795},
@@ -170,8 +182,9 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			},
 			new Region
 			{
-				Name = "Squalicum Creek Park",
-				Preface = "at",
+				Name = "Squalicum Creek",
+				Preface = "around",
+				Suffix = "Park",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.766664, Longitude = -122.500923},
@@ -184,7 +197,8 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			new Region
 			{
 				Name = "Bellis Fair Mall",
-				Preface = "near the",
+				Preface = "at the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.784848, Longitude = -122.493328},
@@ -197,6 +211,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Fairhaven",
 				Preface = "in",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.721276, Longitude = -122.504045},
@@ -210,7 +225,8 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			new Region
 			{
 				Name = "Bayview Cemetary",
-				Preface = "around the",
+				Preface = "near the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.746803, Longitude = -122.442934},
@@ -224,6 +240,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Civic Sports Center",
 				Preface = "at the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.745187, Longitude = -122.459802},
@@ -237,8 +254,9 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			},
 			new Region
 			{
-				Name = "Rock Hill Park",
+				Name = "Rock Hill",
 				Preface = "near",
+				Suffix = "Park",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.745703, Longitude = -122.466807},
@@ -248,6 +266,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Broadway Park",
 				Preface = "around",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.764957, Longitude = -122.479395},
@@ -259,6 +278,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Sunset Plaza",
 				Preface = "near the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.774432, Longitude = -122.463641},
@@ -276,6 +296,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Barkley Village",
 				Preface = "around",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.770328, Longitude = -122.448739},
@@ -291,6 +312,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Northridge Park",
 				Preface = "at",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.772666, Longitude = -122.423314},
@@ -304,6 +326,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Bellingham Technical College",
 				Preface = "around",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.764382, Longitude = -122.508264},
@@ -318,6 +341,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Whatcom Community College",
 				Preface = "around",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.794382, Longitude = -122.493322},
@@ -332,6 +356,7 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Bellingham International Airport",
 				Preface = "by the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location {Latitude = 48.798087, Longitude = -122.532905},
@@ -344,8 +369,9 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			},
 			new Region
 			{
-				Name = "Flatiron Building",
+				Name = "Flatiron",
 				Preface = "near the",
+				Suffix = "building",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.751622, Longitude = -122.480606},
@@ -355,17 +381,19 @@ new Location { Latitude = 48.735466, Longitude = -122.485970},
 			{
 				Name = "Farmers Market",
 				Preface = "near the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.747374, Longitude = -122.481131},
-new Location { Latitude = 48.746473, Longitude = -122.479566},
-new Location { Latitude = 48.746412, Longitude = -122.481400},
+					new Location { Latitude = 48.746473, Longitude = -122.479566},
+					new Location { Latitude = 48.746412, Longitude = -122.481400},
 				}
 			},
 			new Region
 			{
 				Name = "Aslan Brewing",
 				Preface = "near",
+				Suffix = "Company",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.748414, Longitude = -122.474694},
@@ -375,6 +403,7 @@ new Location { Latitude = 48.746412, Longitude = -122.481400},
 			{
 				Name = "The Copper Hog",
 				Preface = "near",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.749228, Longitude = -122.476175},
@@ -384,18 +413,20 @@ new Location { Latitude = 48.746412, Longitude = -122.481400},
 			{
 				Name = "City Hall",
 				Preface = "around",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.754526, Longitude = -122.480005},
-new Location { Latitude = 48.754498, Longitude = -122.478181},
-new Location { Latitude = 48.755715, Longitude = -122.479726},
-new Location { Latitude = 48.756217, Longitude = -122.478020},
+					new Location { Latitude = 48.754498, Longitude = -122.478181},
+					new Location { Latitude = 48.755715, Longitude = -122.479726},
+					new Location { Latitude = 48.756217, Longitude = -122.478020},
 				}
 			},
 			new Region
 			{
 				Name = "Home Skillet",
 				Preface = "by",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.757999, Longitude = -122.468192},
@@ -405,6 +436,7 @@ new Location { Latitude = 48.756217, Longitude = -122.478020},
 			{
 				Name = "Kulshan Brewing",
 				Preface = "by",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.760192, Longitude = -122.464705},
@@ -414,6 +446,7 @@ new Location { Latitude = 48.756217, Longitude = -122.478020},
 			{
 				Name = "Red Square",
 				Preface = "in the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.736939, Longitude = -122.485455},
@@ -422,43 +455,46 @@ new Location { Latitude = 48.756217, Longitude = -122.478020},
 			new Region
 			{
 				Name = "Ridgeway Commons",
-				Preface = "at the",
+				Preface = "among the",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.733310, Longitude = -122.489951},
-new Location { Latitude = 48.734838, Longitude = -122.489050},
+					new Location { Latitude = 48.734838, Longitude = -122.489050},
 				}
 			},
 			new Region
 			{
-				Name = "Wade King Rec Center",
-				Preface = "around the",
+				Name = "Wade King",
+				Preface = "near the",
+				Suffix = "Rec Center",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.731363, Longitude = -122.490155},
-new Location { Latitude = 48.731144, Longitude = -122.487655},
-new Location { Latitude = 48.732184, Longitude = -122.488631},
+					new Location { Latitude = 48.731144, Longitude = -122.487655},
+					new Location { Latitude = 48.732184, Longitude = -122.488631},
 				}
 			},
 			new Region
 			{
 				Name = "Fairhaven College",
 				Preface = "near",
+				Suffix = "",
 				Locations = new List<Location>
 				{
 					new Location { Latitude = 48.730364, Longitude = -122.485423},
-new Location { Latitude = 48.728878, Longitude = -122.486035},
+					new Location { Latitude = 48.728878, Longitude = -122.486035},
 				}
 			},
 			new Region
 			{
 				Name = "Lowell Park",
 				Preface = "around",
-				Locations = new List<Location>
+				Suffix = "",Locations = new List<Location>
 				{
 					new Location { Latitude = 48.727293, Longitude = -122.493631},
-new Location { Latitude = 48.726479, Longitude = -122.492279},
-new Location { Latitude = 48.727633, Longitude = -122.490691},
+					new Location { Latitude = 48.726479, Longitude = -122.492279},
+					new Location { Latitude = 48.727633, Longitude = -122.490691},
 				}
 			},
 		};
