@@ -1,39 +1,30 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 
 namespace PokewatchLauncher
 {
-	class Program
+	internal class Program
 	{
-		static void Main(string[] args)
+		static void Main()
 		{
 			Console.Title = "Pokewatch";
-			if (args.Length < 2)
-			{
-				Console.WriteLine("[!]Usage: PokewatchLauncher.exe -username -password [-auth]");
-				return;
-			}
-
-			s_username = args[0];
-			s_password = args[1];
-			if (args.Length > 2)
-				s_auth = args[2];
 			Launch();
 			Thread.Sleep(Timeout.Infinite);
 		}
 
 		static void Launch()
 		{
-			Process process = new Process();
-			process.StartInfo.FileName = "Pokewatch.exe";
-			process.StartInfo.Arguments = s_username + " " + s_password + " " + s_auth;
-			process.EnableRaisingEvents = true;
+			Process process = new Process
+			{
+				StartInfo = { FileName = "Pokewatch.exe" },
+				EnableRaisingEvents = true
+			};
 			process.Exited += LaunchIfCrashed;
-			Console.WriteLine("[!]Launching: " + process.StartInfo.FileName + " " + process.StartInfo.Arguments);
+			Log("[!]Launching: " + process.StartInfo.FileName + " " + process.StartInfo.Arguments);
 			process.Start();
 		}
-
 
 		//If the bot dies after start-up, it is likely due to a transient issue, take a break and try again later.
 		static void LaunchIfCrashed(object o, EventArgs e)
@@ -41,19 +32,24 @@ namespace PokewatchLauncher
 			Process process = (Process)o;
 			if (process.ExitCode != 0)
 			{
-				Console.WriteLine("[-]Something went wrong. Waiting 2 minutes to restart:");
+				Log($"[-]Something went wrong at {DateTime.Now}. Waiting 2 minutes to restart:");
 				Thread.Sleep(120000);
-				Console.WriteLine("[!]Restarting.");
+				Log("[!]Restarting");
 				Launch();
 			}
 			else
 			{
+				Log("[!]Exiting");
 				Environment.Exit(0);
 			}
 		}
 
-		static string s_username = "";
-		static string s_password = "";
-		static string s_auth = "";
+		private static void Log(string message)
+		{
+			using (StreamWriter w = File.AppendText("log.txt"))
+			{
+				w.WriteLine(message);
+			}
+		}
 	}
 }

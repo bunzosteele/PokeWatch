@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Web.Script.Serialization;
+using Google.Protobuf.Collections;
 using Pokewatch.Datatypes;
+using Pokewatch.DataTypes;
 using POGOLib.Net;
 using POGOLib.Pokemon;
 using POGOProtos.Enums;
+using POGOProtos.Map;
 using POGOProtos.Map.Pokemon;
+using POGOProtos.Networking.Responses;
 using Tweetinvi;
 using Tweetinvi.Core.Extensions;
 using Tweetinvi.Models;
@@ -20,73 +25,89 @@ namespace Pokewatch
 	{
 		public static void Main(string[] args)
 		{
-			if (args.Length < 2)
+			try
 			{
-				Console.WriteLine("[!]Usage: Pokewatch.exe -username -password [-auth]");
+				string json = File.ReadAllText("Configuration.json");
+				s_config = new JavaScriptSerializer().Deserialize<Configuration>(json);
+			}
+			catch(Exception ex)
+			{
+				Log("[-]Unable to load config.");
+				Log(ex.Message);
 				return;
 			}
 
-			s_username = args[0];
-			s_password = args[1];
-			if(args.Length > 2)
-				s_auth = args[2];
-
-			if (s_username.IsNullOrEmpty() || s_password.IsNullOrEmpty())
+			if ((s_config.PTCUsername.IsNullOrEmpty() || s_config.PTCPassword.IsNullOrEmpty()) && (s_config.GAPassword.IsNullOrEmpty() || s_config.GAUsername.IsNullOrEmpty()))
 			{
-				Console.WriteLine("[-]Username and password must be supplied.");
+				Log("[-]Username and password must be supplied for either PTC or Google.");
 				return;
 			}
 
-			if (PrepareTwitterClient())
+			if (!PrepareTwitterClient())
+				return;
+
+			Log("[+]Sucessfully signed in to twitter.");
+
+			Log("[!]Attempting to sign in to PokemonGo using PTC.");
+			if (PrepareClient(s_config.PTCUsername, s_config.PTCPassword, LoginProvider.PokemonTrainerClub))
 			{
-				Console.WriteLine("[+]Sucessfully signed in to twitter.");
+				Log("[+]Sucessfully logged in to PokemonGo.");
 			}
 			else
 			{
-				Console.WriteLine("[-]Unable to authenticate Twitter account.");
-				return;
+				Log("[-]Unable to log in using PTC.");
+				Log("[!]Attempting to sign in to PokemonGo using Google.");
+				if (PrepareClient(s_config.GAUsername, s_config.GAPassword, LoginProvider.GoogleAuth))
+				{
+					Log("[+]Sucessfully logged in to PokemonGo.");
+				}
+				else
+				{
+					Log("[-]Unable to log in using Google.");
+					return;
+				}
 			}
 
-			if (PrepareClient())
-			{
-				Console.WriteLine("[+]Sucessfully logged in to PokemonGo.");
-			}
-			else
-			{
-				Console.WriteLine("[-]Unable to authenticate Pokemon account.");
-				return;
-			}
-
-			Search();
+			if (!Search())
+				throw new Exception();
 		}
 
-		private static void Search()
+		private static bool Search()
 		{
+			if (s_config.Regions.Count == 0)
+			{
+				Log("[-]No Regions to search.");
+				return true;
+			}
 			Queue<FoundPokemon> tweetedPokemon = new Queue<FoundPokemon>();
-			Region previousRegion = null;
-
+			int regionIndex = -1;
 			while (true)
 			{
-				Region region = SelectRegion(previousRegion);
-				Console.WriteLine($"[!]Searching Region: {region.Name}");
+				regionIndex++;
+				if (regionIndex == s_config.Regions.Count)
+					regionIndex = 0;
 
-				bool found = false;
+				Region region = s_config.Regions[regionIndex];
+				Log($"[!]Searching Region: {region.Name}");
 				foreach (Location location in region.Locations)
 				{
 					SetLocation(location);
 
 					//Wait so we don't clobber api and to let the heartbeat catch up to our new location. (Minimum heartbeat time is 4000ms)
 					Thread.Sleep(5000);
-
-					Console.WriteLine("[!]Searching nearby cells.");
-					var mapObjects = s_poClient.MapObjects;
-					if (s_poClient.MapObjects == null)
+					Log("[!]Searching nearby cells.");
+					RepeatedField<MapCell> mapCells;
+					try
 					{
-						Console.WriteLine("[-]Heartbeat has failed. Terminating Connection.");
-						throw new Exception();
+						var mapObjects = s_poClient.MapObjects;
+						mapCells = mapObjects.MapCells;
 					}
-
-					foreach (var mapCell in mapObjects.MapCells)
+					catch
+					{
+						Log("[-]Heartbeat has failed. Terminating Connection.");
+						return false;
+					}
+					foreach (var mapCell in mapCells)
 					{
 						foreach (WildPokemon pokemon in mapCell.WildPokemons)
 						{
@@ -94,53 +115,43 @@ namespace Pokewatch
 
 							if (foundPokemon == null)
 								continue;
-							
-							s_twitterClient.PublishTweet(ComposeTweet(foundPokemon, region));
-							Console.WriteLine("[+]Tweet published.");
 
-							found = true;
-							previousRegion = region;
+							string tweet = ComposeTweet(foundPokemon, region);
+							s_twitterClient.PublishTweet(tweet);
+							Log("[+]Tweet published: " + tweet);
+
 							tweetedPokemon.Enqueue(foundPokemon);
-
 							if (tweetedPokemon.Count > 10)
 								tweetedPokemon.Dequeue();
-							break;
 						}
-						if (found)
-							break;
 					}
-					if (found)
-						break;
 				}
-				Console.WriteLine("[!]Finished Searching " + region.Name);
+				Log("[!]Finished Searching " + region.Name);
 			}
 		}
 
 		//Sign in to PokemonGO
-		private static bool PrepareClient()
+		private static bool PrepareClient(string username, string password, LoginProvider loginProvider)
 		{
-			var loginProvider = LoginProvider.PokemonTrainerClub;
-
-			if (s_auth == "google")
-				loginProvider = LoginProvider.GoogleAuth;
-
-			Console.WriteLine("[!]Using auth provider:" + loginProvider);
-
-			s_poClient = new PoClient(s_username, loginProvider);
-
-			Console.WriteLine("[!]Setting up PoClient for user:" + s_username);
+			s_poClient = new PoClient(username, loginProvider);
 
 			// Client requires a location be set when signing in.
-			SetLocation(Data.Regions.First().Locations.First());
-
-			return s_poClient.Authenticate(s_password);
+			SetLocation(s_config.Regions.First().Locations.First());
+			return s_poClient.Authenticate(password);
 		}
 
 		//Sign in to Twitter.
 		private static bool PrepareTwitterClient()
 		{
-			Console.WriteLine("[!]Signing in to Twitter.");
-			var userCredentials = Auth.CreateCredentials(s_consumerToken, s_consumerSecret, s_accessToken, s_accessSecret);
+			if (s_config.TwitterConsumerToken.IsNullOrEmpty() || s_config.TwitterConsumerSecret.IsNullOrEmpty()
+				|| s_config.TwitterAccessToken.IsNullOrEmpty() || s_config.TwitterConsumerSecret.IsNullOrEmpty())
+			{
+				Log("[-]Must supply Twitter OAuth strings.");
+				return false;
+			}
+
+			Log("[!]Signing in to Twitter.");
+			var userCredentials = Auth.CreateCredentials(s_config.TwitterConsumerToken, s_config.TwitterConsumerSecret, s_config.TwitterAccessToken, s_config.TwitterAccessSecret);
 			ExceptionHandler.SwallowWebExceptions = false;
 			try
 			{
@@ -148,6 +159,7 @@ namespace Pokewatch
 			}
 			catch
 			{
+				Log("[-]Unable to authenticate Twitter account.");
 				return false;
 			}
 			return true;
@@ -155,7 +167,7 @@ namespace Pokewatch
 
 		private static void SetLocation(Location location)
 		{
-			Console.WriteLine($"[!]Setting location to {location.Latitude},{location.Longitude}");
+			Log($"[!]Setting location to {location.Latitude},{location.Longitude}");
 			s_poClient.SetGpsData(location.Latitude, location.Longitude);
 		}
 
@@ -166,49 +178,51 @@ namespace Pokewatch
 			{
 				Location = new Location { Latitude = pokemon.Latitude, Longitude = pokemon.Longitude},
 				Type = pokemon.Pokemon.PokemonType,
-				LifeExpectancy = TimeSpan.FromMilliseconds(pokemon.TimeTillHiddenMs).Minutes
+				LifeExpectancy = pokemon.TimeTillHiddenMs / 1000
 			};
-			Console.Write($"[!]Found: {pokemon.Pokemon.PokemonType} ({foundPokemon.LifeExpectancy} minutes): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)} -");
 
-			if (Data.ExcludedPokemon.Contains(foundPokemon.Type))
+			if (s_config.ExcludedPokemon.Contains(foundPokemon.Type))
 			{
-				Console.WriteLine("excluded");
+				Log($"[!]Excluded: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
-			if (foundPokemon.LifeExpectancy < c_minimumLifeExpectancy)
+			if (foundPokemon.LifeExpectancy < s_config.MinimumLifeExpectancy)
 			{
-				Console.WriteLine("expiring");
+				Log($"[!]Expiring: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
 			if (alreadyFound.Contains(foundPokemon))
 			{
-				Console.WriteLine("duplicate");
+				Log($"[!]Duplicate: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
-			Console.WriteLine("tweeting");
+			Log($"[!]Tweeting: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 			return foundPokemon;
-		}
-
-		//Select a random region that we didn't just search.
-		private static Region SelectRegion(Region previous)
-		{
-			Random random = new Random();
-			int regionIndex = -1;
-			while (regionIndex < 0 || regionIndex == Data.Regions.IndexOf(previous))
-				regionIndex = random.Next(Data.Regions.Count);
-
-			return Data.Regions[regionIndex];
 		}
 
 		//Build a tweet with useful information about the pokemon, then cram in as many hashtags as will fit.
 		private static string ComposeTweet(FoundPokemon pokemon, Region region)
 		{
+			Log("[!]Composing Tweet");
 			string mapsLink = $"https://www.google.com/maps/place/{pokemon.Location.Latitude},{pokemon.Location.Longitude}";
-			string expiration = DateTime.Now.AddMinutes(pokemon.LifeExpectancy).ToLocalTime().ToShortTimeString();
-			string tweet = $"A wild {SpellCheckPokemon(pokemon.Type)} appeared! It will be {region.Preface} {region.Name} {region.Suffix} until {expiration}. {mapsLink}";
+			string expiration = DateTime.Now.AddSeconds(pokemon.LifeExpectancy).ToLocalTime().ToShortTimeString();
+			string tweet = "";
+
+			if (s_config.PriorityPokemon.Contains(pokemon.Type))
+			{
+				tweet = $"BREAKING NEWS: {SpellCheckPokemon(pokemon.Type)} has appeared {region.Prefix} {region.Name} {region.Suffix}! Hurry, it will vanish at {expiration}! {mapsLink}";
+			}
+			else
+			{
+				tweet = $"A wild {SpellCheckPokemon(pokemon.Type)} appeared! It will be {region.Prefix} {region.Name} {region.Suffix} until {expiration}. {mapsLink}";
+			}
+
+			tweet = Regex.Replace(tweet, @"\s\s", @" ");
+			tweet = Regex.Replace(tweet, @"\s[!]", @"!");
+
 			if (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Type, true)) < 140)
 				tweet += " #" + SpellCheckPokemon(pokemon.Type, true);
 
@@ -224,7 +238,6 @@ namespace Pokewatch
 			return tweet;
 		}
 
-
 		//Generate user friendly and hashtag friendly pokemon names
 		//Also, this client straight up spells some of the pokemon wrong.
 		private static string SpellCheckPokemon(PokemonType pokemon, bool isHashtag = false)
@@ -235,6 +248,8 @@ namespace Pokewatch
 					return "Charmander";
 				case PokemonType.Clefary:
 					return "Clefairy";
+				case PokemonType.Geoduge:
+					return "Geodude";
 				case PokemonType.Farfetchd:
 					return isHashtag ? "Farfetchd" : "Farfetch'd";
 				case PokemonType.MrMime:
@@ -248,16 +263,16 @@ namespace Pokewatch
 			}
 		}
 
-		const int c_minimumLifeExpectancy = 5;
-		private static string s_username = "";
-		private static string s_password = "";
-		private static string s_auth = "";
-		private static PoClient s_poClient;
+		private static void Log(string message)
+		{
+			using (StreamWriter w = File.AppendText("log.txt"))
+			{
+				w.WriteLine(message);
+			}
+		}
 
-		private static string s_consumerToken = "CONSUMER_TOKEN";
-		private static string s_consumerSecret = "CONSUMER_SECRET";
-		private static string s_accessToken = "ACCESS_TOKEN";
-		private static string s_accessSecret = "ACCESS_SECRET";
+		private static Configuration s_config;
 		private static IAuthenticatedUser s_twitterClient;
+		private static PoClient s_poClient;
 	}
 }
