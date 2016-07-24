@@ -13,7 +13,6 @@ using POGOLib.Pokemon;
 using POGOProtos.Enums;
 using POGOProtos.Map;
 using POGOProtos.Map.Pokemon;
-using POGOProtos.Networking.Responses;
 using Tweetinvi;
 using Tweetinvi.Core.Extensions;
 using Tweetinvi.Models;
@@ -81,6 +80,7 @@ namespace Pokewatch
 			}
 			Queue<FoundPokemon> tweetedPokemon = new Queue<FoundPokemon>();
 			int regionIndex = -1;
+			DateTime lastTweet = DateTime.MinValue;
 			while (true)
 			{
 				regionIndex++;
@@ -111,7 +111,7 @@ namespace Pokewatch
 					{
 						foreach (WildPokemon pokemon in mapCell.WildPokemons)
 						{
-							FoundPokemon foundPokemon = ProcessPokemon(pokemon, tweetedPokemon);
+							FoundPokemon foundPokemon = ProcessPokemon(pokemon, tweetedPokemon, lastTweet);
 
 							if (foundPokemon == null)
 								continue;
@@ -119,6 +119,7 @@ namespace Pokewatch
 							string tweet = ComposeTweet(foundPokemon, region);
 							s_twitterClient.PublishTweet(tweet);
 							Log("[+]Tweet published: " + tweet);
+							lastTweet = DateTime.Now;
 
 							tweetedPokemon.Enqueue(foundPokemon);
 							if (tweetedPokemon.Count > 10)
@@ -172,7 +173,7 @@ namespace Pokewatch
 		}
 
 		//Evaluate if a pokemon is worth tweeting about.
-		private static FoundPokemon ProcessPokemon(WildPokemon pokemon, Queue<FoundPokemon> alreadyFound)
+		private static FoundPokemon ProcessPokemon(WildPokemon pokemon, Queue<FoundPokemon> alreadyFound, DateTime lastTweet)
 		{
 			FoundPokemon foundPokemon = new FoundPokemon
 			{
@@ -196,6 +197,12 @@ namespace Pokewatch
 			if (alreadyFound.Contains(foundPokemon))
 			{
 				Log($"[!]Duplicate: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				return null;
+			}
+
+			if ((lastTweet + TimeSpan.FromSeconds(s_config.RateLimit) > DateTime.Now) && !s_config.PriorityPokemon.Contains(foundPokemon.Type))
+			{
+				Log($"[!]Limiting: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
