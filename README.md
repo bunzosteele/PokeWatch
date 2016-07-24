@@ -4,9 +4,10 @@ A twitter bot that uses the Pokemon Go API to find rare pokemon.
 Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 
 ##Set Up Instructions
-1. GETTING THE FILES [You probably already did this.]:
+1. GETTING THE FILES:
 
 	a. Download and Pokewatch.zip and extract files (https://db.tt/6Vp3nENn).
+	b. Alternatively, clone and build the repo.
 	
 2. CREATING POKEMONGO ACCOUNTS:
 
@@ -39,9 +40,7 @@ Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 	
 	c. Set GAUsername and GAPassword to your Google account credentials if you created one.
 	
-	d. Set TwitterConsumerToken to your twitter app's Consumer Key, TwitterConsumerSecret to Consumer Secret,
-	
-	   TwitterAccessToken to Access Token and TwitterAccessSecret to Access Secret
+	d. Set TwitterConsumerToken to your twitter app's Consumer Key, TwitterConsumerSecret to Consumer Secret, TwitterAccessToken to Access Token and TwitterAccessSecret to Access Secret
 	   
 5. CUSTOMIZE BOT FUNCTIONALITY:
 
@@ -67,17 +66,12 @@ Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 		Locations: List of GPS coordinates that the bot will scan for pokemon in. The bot will identify pokemon within
 			~200 meters of that point. Double clicking on google maps will give you the GPS coordinates.
 			
-6. VALIDATE CONFIGURATION
 
-	Copy paste the new contents of your Configuration.json into http://jsonlint.com/ and click validate.
-	This will check for any syntax errors you may have accidentally made while entering your values.
-	If the Result is "Valid Json" then save Configuration.json, and your app should be properly configured.
-	
-7. RUNNING THE APP
+6. RUNNING THE APP
 
 	Run PokewatchLauncher.exe
 	
-8. OPTIONAL:
+7. OPTIONAL:
 
 	a. Due to limitations with the PokemonGo API, any given PokemonGo user can only update their location every 4 seconds,
 	   therefore, it is not recommended to include more than 50 Locations to scan on a single bot.
