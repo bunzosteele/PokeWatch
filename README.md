@@ -7,6 +7,7 @@ Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 1. GETTING THE FILES:
 
 	a. Download and Pokewatch.zip and extract files (https://db.tt/6Vp3nENn).
+	
 	b. Alternatively, clone and build the repo.
 	
 2. CREATING POKEMONGO ACCOUNTS:
