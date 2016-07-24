@@ -63,7 +63,7 @@ namespace Pokewatch
 				else
 				{
 					Log("[-]Unable to log in using Google.");
-					return;
+					throw new Exception();
 				}
 			}
 
@@ -214,7 +214,9 @@ namespace Pokewatch
 		private static string ComposeTweet(FoundPokemon pokemon, Region region)
 		{
 			Log("[!]Composing Tweet");
-			string mapsLink = $"https://www.google.com/maps/place/{pokemon.Location.Latitude},{pokemon.Location.Longitude}";
+			string latitude = pokemon.Location.Latitude.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+			string longitude = pokemon.Location.Longitude.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-us"));
+			string mapsLink = $"https://www.google.com/maps/place/{latitude},{longitude}";
 			string expiration = DateTime.Now.AddSeconds(pokemon.LifeExpectancy).ToLocalTime().ToShortTimeString();
 			string tweet = "";
 
@@ -235,9 +237,6 @@ namespace Pokewatch
 
 			if (Tweet.Length(tweet + " #" + Regex.Replace(region.Name, @"\s+", "")) < 140)
 				tweet += " #" + Regex.Replace(region.Name, @"\s+", "");
-
-			if (Tweet.Length(tweet + " #Bellingham") < 140)
-				tweet += " #Bellingham";
 
 			if (Tweet.Length(tweet + " #PokemonGO") < 140)
 				tweet += " #PokemonGO";
