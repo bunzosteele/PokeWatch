@@ -5,10 +5,12 @@ Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 
 Subreddit: https://reddit.com/r/pokewatch
 
+DOWNLOAD: https://db.tt/wNDXXmgr
+
 ##Set Up Instructions
 1. GETTING THE FILES:
 
-	a. Download and Pokewatch.zip and extract files (https://db.tt/6Vp3nENn).
+	a. Download and Pokewatch.zip and extract files (https://db.tt/wNDXXmgr).
 	
 	b. Alternatively, clone and build the repo.
 	
