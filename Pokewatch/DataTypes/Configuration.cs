@@ -34,5 +34,10 @@ namespace Pokewatch.DataTypes
 
 		//Secondary Class Of Accepted Pokemon That Ignores RateLimit
 		public List<PokemonId> PriorityPokemon { get; set; }
+
+		//Controls Tweet Hashtags
+		public bool TagPokemon { get; set; }
+		public bool TagRegion { get; set; }
+		public List<string> CustomTags { get; set; }
 	}
 }

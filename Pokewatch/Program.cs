@@ -256,14 +256,17 @@ namespace Pokewatch
 			tweet = Regex.Replace(tweet, @"\s\s", @" ");
 			tweet = Regex.Replace(tweet, @"\s[!]", @"!");
 
-			if (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Type, true)) < 140)
+			if (s_config.TagPokemon && (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Type, true)) < 138))
 				tweet += " #" + SpellCheckPokemon(pokemon.Type, true);
 
-			if (Tweet.Length(tweet + " #" + Regex.Replace(region.Name, @"\s+", "")) < 140)
+			if (s_config.TagRegion && (Tweet.Length(tweet + " #" + Regex.Replace(region.Name, @"\s+", "")) < 138))
 				tweet += " #" + Regex.Replace(region.Name, @"\s+", "");
 
-			if (Tweet.Length(tweet + " #PokemonGO") < 140)
-				tweet += " #PokemonGO";
+			foreach(string tag in s_config.CustomTags)
+			{
+				if(Tweet.Length(tweet + tag) < 138)
+					tweet += " #" + tag;
+			}
 
 			return tweet;
 		}
