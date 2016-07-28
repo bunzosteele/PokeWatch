@@ -5,7 +5,7 @@ namespace Pokewatch.Datatypes
 {
 	internal sealed class FoundPokemon : IEquatable<FoundPokemon>
 	{
-		public PokemonType Type { get; set; }
+		public PokemonId Type { get; set; }
 		public Location Location { get; set; }
 		public int LifeExpectancy { get; set; }
 

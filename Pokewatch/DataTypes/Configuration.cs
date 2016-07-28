@@ -30,9 +30,9 @@ namespace Pokewatch.DataTypes
 		public List<Region> Regions { get; set; }
 
 		//Pokemon To Ignore
-		public List<PokemonType> ExcludedPokemon { get; set; }
+		public List<PokemonId> ExcludedPokemon { get; set; }
 
 		//Secondary Class Of Accepted Pokemon That Ignores RateLimit
-		public List<PokemonType> PriorityPokemon { get; set; }
+		public List<PokemonId> PriorityPokemon { get; set; }
 	}
 }

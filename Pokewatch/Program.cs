@@ -9,7 +9,9 @@ using Google.Protobuf.Collections;
 using Pokewatch.Datatypes;
 using Pokewatch.DataTypes;
 using POGOLib.Net;
+using POGOLib.Net.Authentication;
 using POGOLib.Pokemon;
+using POGOLib.Pokemon.Data;
 using POGOProtos.Enums;
 using POGOProtos.Map;
 using POGOProtos.Map.Pokemon;
@@ -46,26 +48,10 @@ namespace Pokewatch
 				return;
 
 			Log("[+]Sucessfully signed in to twitter.");
-
-			Log("[!]Attempting to sign in to PokemonGo using PTC.");
-			if (PrepareClient(s_config.PTCUsername, s_config.PTCPassword, LoginProvider.PokemonTrainerClub))
+			if (PrepareClient())
 			{
-				Log("[+]Sucessfully logged in to PokemonGo.");
-			}
-			else
-			{
-				Log("[-]Unable to log in using PTC.");
-				Log("[!]Attempting to sign in to PokemonGo using Google.");
-				if (PrepareClient(s_config.GAUsername, s_config.GAPassword, LoginProvider.GoogleAuth))
-				{
-					Log("[+]Sucessfully logged in to PokemonGo.");
-				}
-				else
-				{
-					Log("[-]Unable to log in using Google.");
-					throw new Exception();
-				}
-			}
+				Log("[+]Sucessfully signed in to PokemonGo, beginning search.");
+			};
 
 			if (!Search())
 				throw new Exception();
@@ -73,17 +59,12 @@ namespace Pokewatch
 
 		private static bool Search()
 		{
-			if (s_config.Regions.Count == 0)
-			{
-				Log("[-]No Regions to search.");
-				return true;
-			}
 			Queue<FoundPokemon> tweetedPokemon = new Queue<FoundPokemon>();
-			int regionIndex = -1;
 			DateTime lastTweet = DateTime.MinValue;
+			Random random = new Random();
 			while (true)
 			{
-				regionIndex++;
+				int regionIndex = random.Next(s_config.Regions.Count);
 				if (regionIndex == s_config.Regions.Count)
 					regionIndex = 0;
 
@@ -99,8 +80,7 @@ namespace Pokewatch
 					RepeatedField<MapCell> mapCells;
 					try
 					{
-						var mapObjects = s_poClient.MapObjects;
-						mapCells = mapObjects.MapCells;
+						mapCells = s_pogoSession.Map.Cells;
 					}
 					catch
 					{
@@ -132,13 +112,47 @@ namespace Pokewatch
 		}
 
 		//Sign in to PokemonGO
-		private static bool PrepareClient(string username, string password, LoginProvider loginProvider)
+		private static bool PrepareClient()
 		{
-			s_poClient = new PoClient(username, loginProvider);
-
-			// Client requires a location be set when signing in.
-			SetLocation(s_config.Regions.First().Locations.First());
-			return s_poClient.Authenticate(password);
+			Location defaultLocation;
+			try
+			{
+				defaultLocation = s_config.Regions.First().Locations.First();
+			}
+			catch
+			{
+				Log("[-]No locations have been supplied.");
+				return false;
+			}
+			if (!s_config.PTCUsername.IsNullOrEmpty() && !s_config.PTCPassword.IsNullOrEmpty())
+			{
+				try
+				{
+					Log("[!]Attempting to sign in to PokemonGo using PTC.");
+					s_pogoSession = Login.GetSession(s_config.PTCUsername, s_config.PTCPassword, LoginProvider.PokemonTrainerClub, defaultLocation.Latitude, defaultLocation.Longitude);
+					Log("[+]Sucessfully logged in to PokemonGo using PTC.");
+					return true;
+				}
+				catch
+				{
+					Log("[-]Unable to log in using PTC.");
+				}
+			}
+			if (!s_config.GAUsername.IsNullOrEmpty() && !s_config.GAPassword.IsNullOrEmpty())
+			{
+				try
+				{
+					Log("[!]Attempting to sign in to PokemonGo using Google.");
+					s_pogoSession = Login.GetSession(s_config.GAUsername, s_config.GAPassword, LoginProvider.GoogleAuth, defaultLocation.Latitude, defaultLocation.Longitude);
+					Log("[+]Sucessfully logged in to PokemonGo using Google.");
+					return true;
+				}
+				catch
+				{
+					Log("[-]Unable to log in using Google.");
+				}
+			}
+			return false;
 		}
 
 		//Sign in to Twitter.
@@ -160,7 +174,7 @@ namespace Pokewatch
 			}
 			catch
 			{
-				Log("[-]Unable to authenticate Twitter account.");
+				Log("[-]Unable to authenticate Twitter account. Check your internet connection, verify your OAuth credential strings. If your bot is new, Twitter may still be validating your application.");
 				return false;
 			}
 			return true;
@@ -169,7 +183,7 @@ namespace Pokewatch
 		private static void SetLocation(Location location)
 		{
 			Log($"[!]Setting location to {location.Latitude},{location.Longitude}");
-			s_poClient.SetGpsData(location.Latitude, location.Longitude);
+			s_pogoSession.Player.SetCoordinates(location.Latitude, location.Longitude);
 		}
 
 		//Evaluate if a pokemon is worth tweeting about.
@@ -178,7 +192,7 @@ namespace Pokewatch
 			FoundPokemon foundPokemon = new FoundPokemon
 			{
 				Location = new Location { Latitude = pokemon.Latitude, Longitude = pokemon.Longitude},
-				Type = pokemon.Pokemon.PokemonType,
+				Type = pokemon.PokemonData.PokemonId,
 				LifeExpectancy = pokemon.TimeTillHiddenMs / 1000
 			};
 
@@ -245,24 +259,17 @@ namespace Pokewatch
 		}
 
 		//Generate user friendly and hashtag friendly pokemon names
-		//Also, this client straight up spells some of the pokemon wrong.
-		private static string SpellCheckPokemon(PokemonType pokemon, bool isHashtag = false)
+		private static string SpellCheckPokemon(PokemonId pokemon, bool isHashtag = false)
 		{
 			switch (pokemon)
 			{
-				case PokemonType.Charmender:
-					return "Charmander";
-				case PokemonType.Clefary:
-					return "Clefairy";
-				case PokemonType.Geoduge:
-					return "Geodude";
-				case PokemonType.Farfetchd:
+				case PokemonId.Farfetchd:
 					return isHashtag ? "Farfetchd" : "Farfetch'd";
-				case PokemonType.MrMime:
+				case PokemonId.MrMime:
 					return isHashtag ? "MrMime" : "Mr. Mime";
-				case PokemonType.NidoranFemale:
+				case PokemonId.NidoranFemale:
 					return isHashtag ? "Nidoran" : "Nidoran♀";
-				case PokemonType.NidoranMale:
+				case PokemonId.NidoranMale:
 					return isHashtag ? "Nidoran" : "Nidoran♂";
 				default:
 					return pokemon.ToString();
@@ -271,14 +278,15 @@ namespace Pokewatch
 
 		private static void Log(string message)
 		{
+			Console.WriteLine(message);
 			using (StreamWriter w = File.AppendText("log.txt"))
 			{
-				w.WriteLine(message);
+				w.WriteLine(DateTime.Now + ": " + message);
 			}
 		}
 
 		private static Configuration s_config;
 		private static IAuthenticatedUser s_twitterClient;
-		private static PoClient s_poClient;
+		private static Session s_pogoSession;
 	}
 }
