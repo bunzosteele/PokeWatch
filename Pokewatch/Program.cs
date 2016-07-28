@@ -97,7 +97,17 @@ namespace Pokewatch
 								continue;
 
 							string tweet = ComposeTweet(foundPokemon, region);
-							s_twitterClient.PublishTweet(tweet);
+
+							try
+							{
+								s_twitterClient.PublishTweet(tweet);
+							}
+							catch(Exception ex)
+							{
+								Log("[-]Tweet failed to publish: " + tweet + " " + ex.Message);
+								continue;
+							}
+
 							Log("[+]Tweet published: " + tweet);
 							lastTweet = DateTime.Now;
 
