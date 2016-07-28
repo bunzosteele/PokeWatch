@@ -2,6 +2,7 @@
 A twitter bot that uses the Pokemon Go API to find rare pokemon.
 
 Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
+
 Subreddit: https://reddit.com/r/pokewatch
 
 ##Set Up Instructions
