@@ -2,6 +2,7 @@
 A twitter bot that uses the Pokemon Go API to find rare pokemon.
 
 Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
+Subreddit: https://reddit.com/r/pokewatch
 
 ##Set Up Instructions
 1. GETTING THE FILES:
@@ -56,6 +57,29 @@ Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 	
 	PriorityPokemon: Pokedex ids for extremely rare pokemon that will be tweeted with an emphasis and will ignore any rate limits.
 	
+	TagPokemon: [true or false] Should a hashtag for the found pokemon be included.
+	
+	TagRegion: [true or false] Should a hashtag for the region be included.
+	
+	CustomTags: A list of extra hashtags to include.
+	
+	RegularTweet: A recipe for the tweet to send out when a pokemon is found. If you are unfamiliar with string formatting,
+	be careful, messing up the syntax will cause your bot to crash.
+	
+		{0}: Name of pokemon found
+		
+		{1}: Prefix for region where pokemon was found.
+		
+		{2}: Name of region where pokemon was found.
+		
+		{3}: Suffix for region where pokemon was found.
+		
+		{4}: Time that found pokemon will expire.
+		
+		{5}: Link to google maps
+		
+	PriorityTweet: Same as regular tweet, but will be used when a pokemon included in PriorityPokemon is found.
+	
 	Regions: Areas to be searched by the bot. Each region consists of a name, prefix, suffix, and a list of locations.
 	
 		Name: Human friendly display name that describes the general area of the listed locations
@@ -67,28 +91,23 @@ Bellingham, WA PokeWatch: https://twitter.com/BhamPokeWatch
 		Locations: List of GPS coordinates that the bot will scan for pokemon in. The bot will identify pokemon within
 			~200 meters of that point. Double clicking on google maps will give you the GPS coordinates.
 			
+6. ENABLE REBOOTING
 
-6. RUNNING THE APP
+	PokewatchLauncher.exe will restart pokewatch any time it dies in the middle of running (usually due to server outages). By default on most machines, OS will prompt you to acknowlege the crash before PokewatchLauncher can reset the application, to disable this and allow the app to run indefinitely without supervision, follow this guide: https://www.raymond.cc/blog/disable-program-has-stopped-working-error-dialog-in-windows-server-2008/
+           
+7. RUNNING THE APP
 
 	Run PokewatchLauncher.exe
 	
-7. OPTIONAL:
+8. OPTIONAL:
 
 	a. Due to limitations with the PokemonGo API, any given PokemonGo user can only update their location every 4 seconds,
 	   therefore, it is not recommended to include more than 50 Locations to scan on a single bot.
+	   Each location has a radius of 200m.
 	   With more locations, it will on average take longer to find pokemon after they spawn.
 	   The faster they are found and tweeted, the more time people have to find and catch them.
 	   If you want to scan more locations, you should repeat this process for a second bot, with different GPS locations, but reuse the credentials from Step 3.
-	   
-	   NOTE: If the 200m radius of locations on two different bots overlap, you may get duplicate tweets.
-
-	b. PokewatchLauncher.exe will restart pokewatch any time it dies in the middle of running (usually due to server outages).
-	   By default on most machines, OS will prompt you to acknowlege the crash before PokewatchLauncher, can reset the application,
-	   to disable this and allow the app to run indefinitely without supervision, follow this guide:
-           https://www.raymond.cc/blog/disable-program-has-stopped-working-error-dialog-in-windows-server-2008/
            
-	c. If you have any trouble, reach out to me.
-
 ##Credits
 https://github.com/AeonLucid/POGOLib
 
