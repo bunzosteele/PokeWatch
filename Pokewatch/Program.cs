@@ -202,35 +202,35 @@ namespace Pokewatch
 			FoundPokemon foundPokemon = new FoundPokemon
 			{
 				Location = new Location { Latitude = pokemon.Latitude, Longitude = pokemon.Longitude},
-				Type = pokemon.PokemonData.PokemonId,
+				Kind = pokemon.PokemonData.PokemonId,
 				LifeExpectancy = pokemon.TimeTillHiddenMs / 1000
 			};
 
-			if (s_config.ExcludedPokemon.Contains(foundPokemon.Type))
+			if (s_config.ExcludedPokemon.Contains(foundPokemon.Kind))
 			{
-				Log($"[!]Excluded: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				Log($"[!]Excluded: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
 			if (foundPokemon.LifeExpectancy < s_config.MinimumLifeExpectancy)
 			{
-				Log($"[!]Expiring: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				Log($"[!]Expiring: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
 			if (alreadyFound.Contains(foundPokemon))
 			{
-				Log($"[!]Duplicate: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				Log($"[!]Duplicate: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
-			if ((lastTweet + TimeSpan.FromSeconds(s_config.RateLimit) > DateTime.Now) && !s_config.PriorityPokemon.Contains(foundPokemon.Type))
+			if ((lastTweet + TimeSpan.FromSeconds(s_config.RateLimit) > DateTime.Now) && !s_config.PriorityPokemon.Contains(foundPokemon.Kind))
 			{
-				Log($"[!]Limiting: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				Log($"[!]Limiting: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 				return null;
 			}
 
-			Log($"[!]Tweeting: {foundPokemon.Type} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+			Log($"[!]Tweeting: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
 			return foundPokemon;
 		}
 
@@ -244,20 +244,20 @@ namespace Pokewatch
 			string expiration = DateTime.Now.AddSeconds(pokemon.LifeExpectancy).ToLocalTime().ToShortTimeString();
 			string tweet = "";
 
-			if (s_config.PriorityPokemon.Contains(pokemon.Type))
+			if (s_config.PriorityPokemon.Contains(pokemon.Kind))
 			{
-				tweet = $"BREAKING NEWS: {SpellCheckPokemon(pokemon.Type)} has appeared {region.Prefix} {region.Name} {region.Suffix}! Hurry, it will vanish at {expiration}! {mapsLink}";
+				tweet = string.Format(s_config.PriorityTweet, SpellCheckPokemon(pokemon.Kind), region.Prefix, region.Name, region.Suffix, expiration, mapsLink);
 			}
 			else
 			{
-				tweet = $"A wild {SpellCheckPokemon(pokemon.Type)} appeared! It will be {region.Prefix} {region.Name} {region.Suffix} until {expiration}. {mapsLink}";
+				tweet = string.Format(s_config.RegularTweet, SpellCheckPokemon(pokemon.Kind), region.Prefix, region.Name, region.Suffix, expiration, mapsLink);
 			}
 
 			tweet = Regex.Replace(tweet, @"\s\s", @" ");
 			tweet = Regex.Replace(tweet, @"\s[!]", @"!");
 
-			if (s_config.TagPokemon && (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Type, true)) < 138))
-				tweet += " #" + SpellCheckPokemon(pokemon.Type, true);
+			if (s_config.TagPokemon && (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Kind, true)) < 138))
+				tweet += " #" + SpellCheckPokemon(pokemon.Kind, true);
 
 			if (s_config.TagRegion && (Tweet.Length(tweet + " #" + Regex.Replace(region.Name, @"\s+", "")) < 138))
 				tweet += " #" + Regex.Replace(region.Name, @"\s+", "");
@@ -268,25 +268,38 @@ namespace Pokewatch
 					tweet += " #" + tag;
 			}
 
+			Log("[!]Sucessfully composed tweet.");
 			return tweet;
 		}
 
 		//Generate user friendly and hashtag friendly pokemon names
 		private static string SpellCheckPokemon(PokemonId pokemon, bool isHashtag = false)
 		{
+			string display;
 			switch (pokemon)
 			{
 				case PokemonId.Farfetchd:
-					return isHashtag ? "Farfetchd" : "Farfetch'd";
+					display = isHashtag ? "Farfetchd" : "Farfetch'd";
+					break;
 				case PokemonId.MrMime:
-					return isHashtag ? "MrMime" : "Mr. Mime";
+					display = isHashtag ? "MrMime" : "Mr. Mime";
+					break;
 				case PokemonId.NidoranFemale:
-					return isHashtag ? "Nidoran" : "Nidoran♀";
+					display = isHashtag ? "Nidoran" : "Nidoran♀";
+					break;
 				case PokemonId.NidoranMale:
-					return isHashtag ? "Nidoran" : "Nidoran♂";
+					display = isHashtag ? "Nidoran" : "Nidoran♂";
+					break;
 				default:
-					return pokemon.ToString();
+					display = pokemon.ToString();
+					break;
 			}
+			if (s_config.PokemonOverrides.Any(po => po.Kind == pokemon))
+			{
+				display = s_config.PokemonOverrides.First(po => po.Kind == pokemon).Display;
+			}
+			Regex regex = new Regex("[^a-zA-Z0-9]");
+			return isHashtag ? regex.Replace(display, "") : display;
 		}
 
 		private static void Log(string message)
