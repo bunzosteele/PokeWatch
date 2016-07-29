@@ -26,7 +26,10 @@ namespace Pokewatch
 	{
 	    private static int _regionIndex;
 	    private static int _locationInt;
-        static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
+        private static DateTime _lastTweet = DateTime.MinValue;
+
+        private static readonly Queue<FoundPokemon> TweetedPokemon = new Queue<FoundPokemon>();
+        private static readonly ManualResetEvent QuitEvent = new ManualResetEvent(false);
 
         public static void Main(string[] args)
 		{
@@ -58,31 +61,28 @@ namespace Pokewatch
 			if (PrepareClient())
 			{
 				Log("[+]Sucessfully signed in to PokemonGo, beginning search.");
-			};
+			}
 
             s_pogoSession.AccessTokenUpdated += (sender, eventArgs) =>
             {
                 Log("[+]Access token updated.");
             };
 
-            s_pogoSession.Player.Inventory.Update += (sender, eventArgs) =>
-            {
-                Log("[+]Inventory was updated.");
-                Console.WriteLine("Inventory was updated.");
-            };
             s_pogoSession.Map.Update += (sender, eventArgs) =>
             {
                 Log("[+]Map was updated.");
-                ProcessMap();
-                NextLocation();
+                if (ProcessMap())
+                {
+                    NextLocation();
+                }
             };
 
             Console.CancelKeyPress += (sender, eArgs) => {
-                _quitEvent.Set();
+                QuitEvent.Set();
                 eArgs.Cancel = true;
             };
             
-            _quitEvent.WaitOne();
+            QuitEvent.WaitOne();
         }
 
 	    private static void NextLocation()
@@ -99,19 +99,16 @@ namespace Pokewatch
 	        }
 
             Region region = s_config.Regions[_regionIndex];
-            Log($"[!]Searching Region: {region.Name}");
+            Log($"[!]Searching Region {_regionIndex}: {region.Name}");
             Location location = region.Locations[_locationInt];
+            Log($"[!]Going to Location {_locationInt}: {location.Latitude}, {location.Longitude}");
 
             SetLocation(location);
         }
 
         private static bool ProcessMap()
         {
-            Queue<FoundPokemon> tweetedPokemon = new Queue<FoundPokemon>();
-            DateTime lastTweet = DateTime.MinValue;
-
             Region region = s_config.Regions[_regionIndex];
-            Location location = region.Locations[_locationInt];
 
             Log("[!]Searching nearby cells.");
             RepeatedField<MapCell> mapCells;
@@ -128,7 +125,7 @@ namespace Pokewatch
             {
                 foreach (WildPokemon pokemon in mapCell.WildPokemons)
                 {
-                    FoundPokemon foundPokemon = ProcessPokemon(pokemon, tweetedPokemon, lastTweet);
+                    FoundPokemon foundPokemon = ProcessPokemon(pokemon, TweetedPokemon, _lastTweet);
 
                     if (foundPokemon == null)
                         continue;
@@ -139,7 +136,7 @@ namespace Pokewatch
                     {
                         s_twitterClient.PublishTweet(tweet);
                         Log("[+]Tweet published: " + tweet);
-                        lastTweet = DateTime.Now;
+                        _lastTweet = DateTime.Now;
                     }
                     catch (Exception ex)
                     {
@@ -147,12 +144,12 @@ namespace Pokewatch
                     }
                     finally
                     {
-                        tweetedPokemon.Enqueue(foundPokemon);
+                        TweetedPokemon.Enqueue(foundPokemon);
                     }
 
-                    if (tweetedPokemon.Count > 10)
+                    if (TweetedPokemon.Count > 100)
                     {
-                        tweetedPokemon.Dequeue();
+                        TweetedPokemon.Dequeue();
                     }
                 }
                 
