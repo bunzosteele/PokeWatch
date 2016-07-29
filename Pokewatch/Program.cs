@@ -70,8 +70,6 @@ namespace Pokewatch
 				throw new Exception();
 			}
 
-			Log("[+]Sucessfully signed in to PokemonGo, beginning search.");
-
 			s_pogoSession.AccessTokenUpdated += (sender, eventArgs) =>
 			{
 				Log("[+]Access token updated.");
@@ -79,7 +77,7 @@ namespace Pokewatch
 
 			s_pogoSession.Map.Update += (sender, eventArgs) =>
 			{
-				Log("[+]Location Acknowleged. Beginning Search.");
+				Log("[+]Location Acknowleged. Searching...");
 				if (Search())
 					UpdateLocation();
 			};
