@@ -10,7 +10,6 @@ using Pokewatch.Datatypes;
 using Pokewatch.DataTypes;
 using POGOLib.Net;
 using POGOLib.Net.Authentication;
-using POGOLib.Pokemon;
 using POGOLib.Pokemon.Data;
 using POGOProtos.Enums;
 using POGOProtos.Map;
@@ -24,19 +23,9 @@ namespace Pokewatch
 {
 	public class Program
 	{
-	    private static int _regionIndex;
-	    private static int _locationInt;
-        private static DateTime _lastTweet = DateTime.MinValue;
-
-        private static readonly Queue<FoundPokemon> TweetedPokemon = new Queue<FoundPokemon>();
-        private static readonly ManualResetEvent QuitEvent = new ManualResetEvent(false);
-
-        public static void Main(string[] args)
+		public static void Main(string[] args)
 		{
-		    _regionIndex = 0;
-		    _locationInt = 0;
-
-            try
+			try
 			{
 				string json = File.ReadAllText("Configuration.json");
 				s_config = new JavaScriptSerializer().Deserialize<Configuration>(json);
@@ -45,6 +34,23 @@ namespace Pokewatch
 			{
 				Log("[-]Unable to load config.");
 				Log(ex.Message);
+				return;
+			}
+
+			try
+			{
+				s_scanAreas = s_config.Regions.SelectMany(r => r.Locations.Select(l => new ScanArea
+				{
+					Location = l,
+					Name = r.Name,
+					Prefix = r.Prefix,
+					Suffix = r.Suffix
+				})).ToList();
+				s_currentScan = s_scanAreas.First();
+			}
+			catch
+			{
+				Log("[-]Invalid Region Configuration");
 				return;
 			}
 
@@ -58,107 +64,83 @@ namespace Pokewatch
 				return;
 
 			Log("[+]Sucessfully signed in to twitter.");
-			if (PrepareClient())
+			if (!PrepareClient())
 			{
-				Log("[+]Sucessfully signed in to PokemonGo, beginning search.");
+				Log("[-]Unable to sign in to PokemonGo.");
+				throw new Exception();
 			}
 
-            s_pogoSession.AccessTokenUpdated += (sender, eventArgs) =>
-            {
-                Log("[+]Access token updated.");
-            };
+			Log("[+]Sucessfully signed in to PokemonGo, beginning search.");
 
-            s_pogoSession.Map.Update += (sender, eventArgs) =>
-            {
-                Log("[+]Map was updated.");
-                if (ProcessMap())
-                {
-                    NextLocation();
-                }
-            };
+			s_pogoSession.AccessTokenUpdated += (sender, eventArgs) =>
+			{
+				Log("[+]Access token updated.");
+			};
 
-            Console.CancelKeyPress += (sender, eArgs) => {
-                QuitEvent.Set();
-                eArgs.Cancel = true;
-            };
-            
-            QuitEvent.WaitOne();
-        }
+			s_pogoSession.Map.Update += (sender, eventArgs) =>
+			{
+				Log("[+]Location Acknowleged. Beginning Search.");
+				if (Search())
+					UpdateLocation();
+			};
 
-	    private static void NextLocation()
-	    {
-	        _locationInt++;
-	        if (_locationInt == s_config.Regions[_regionIndex].Locations.Count)
-	        {
-	            _locationInt = 0;
-	            _regionIndex++;
-	            if (_regionIndex == s_config.Regions.Count)
-	            {
-	                _regionIndex = 0;
-	            }
-	        }
+			Console.CancelKeyPress += (sender, eArgs) => {
+				QuitEvent.Set();
+				eArgs.Cancel = true;
+			};
 
-            Region region = s_config.Regions[_regionIndex];
-            Log($"[!]Searching Region {_regionIndex}: {region.Name}");
-            Location location = region.Locations[_locationInt];
-            Log($"[!]Going to Location {_locationInt}: {location.Latitude}, {location.Longitude}");
+			QuitEvent.WaitOne();
+		}
 
-            SetLocation(location);
-        }
+		private static void UpdateLocation()
+		{
+			int scanIndex = s_scanAreas.IndexOf(s_currentScan);
+			scanIndex++;
+			if (scanIndex == s_scanAreas.Count)
+			{
+				scanIndex = 0;
+				Log("[!]All Regions Scanned.");
+			}
+			s_currentScan = s_scanAreas[scanIndex];
+			SetLocation(s_currentScan.Location);
+			Log($"[!]Scanning: {s_currentScan.Name} ({s_currentScan.Location.Latitude}, {s_currentScan.Location.Longitude})");
+		}
 
-        private static bool ProcessMap()
-        {
-            Region region = s_config.Regions[_regionIndex];
+		private static bool Search()
+		{
+			RepeatedField<MapCell> mapCells = s_pogoSession.Map.Cells;
+			foreach (var mapCell in mapCells)
+			{
+				foreach (WildPokemon pokemon in mapCell.WildPokemons)
+				{
+					FoundPokemon foundPokemon = ProcessPokemon(pokemon, s_tweetedPokemon, s_lastTweet);
 
-            Log("[!]Searching nearby cells.");
-            RepeatedField<MapCell> mapCells;
-            try
-            {
-                mapCells = s_pogoSession.Map.Cells;
-            }
-            catch
-            {
-                Log("[-]Heartbeat has failed. Terminating Connection.");
-                return false;
-            }
-            foreach (var mapCell in mapCells)
-            {
-                foreach (WildPokemon pokemon in mapCell.WildPokemons)
-                {
-                    FoundPokemon foundPokemon = ProcessPokemon(pokemon, TweetedPokemon, _lastTweet);
+					if (foundPokemon == null)
+						continue;
 
-                    if (foundPokemon == null)
-                        continue;
+					string tweet = ComposeTweet(foundPokemon);
 
-                    string tweet = ComposeTweet(foundPokemon, region);
+					try
+					{
+						s_twitterClient.PublishTweet(tweet);
+						Log("[+]Tweet published: " + tweet);
+						s_lastTweet = DateTime.Now;
+					}
+					catch (Exception ex)
+					{
+						Log("[-]Tweet failed to publish: " + tweet + " " + ex.Message);
+					}
 
-                    try
-                    {
-                        s_twitterClient.PublishTweet(tweet);
-                        Log("[+]Tweet published: " + tweet);
-                        _lastTweet = DateTime.Now;
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("[-]Tweet failed to publish: " + tweet + " " + ex.Message);
-                    }
-                    finally
-                    {
-                        TweetedPokemon.Enqueue(foundPokemon);
-                    }
+					s_tweetedPokemon.Enqueue(foundPokemon);
 
-                    if (TweetedPokemon.Count > 100)
-                    {
-                        TweetedPokemon.Dequeue();
-                    }
-                }
-                
-            }
-            Log("[!]Finished Searching " + region.Name);
-            return true;
+					if (s_tweetedPokemon.Count > 10)
+						s_tweetedPokemon.Dequeue();
+				}
+			}
+			Log($"[!]Scanning: {s_currentScan.Name} ({s_currentScan.Location.Latitude}, {s_currentScan.Location.Longitude})");
+			return true;
+		}
 
-        }
-        
 		//Sign in to PokemonGO
 		private static bool PrepareClient()
 		{
@@ -273,7 +255,7 @@ namespace Pokewatch
 		}
 
 		//Build a tweet with useful information about the pokemon, then cram in as many hashtags as will fit.
-		private static string ComposeTweet(FoundPokemon pokemon, Region region)
+		private static string ComposeTweet(FoundPokemon pokemon)
 		{
 			Log("[!]Composing Tweet");
 			string latitude = pokemon.Location.Latitude.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-us"));
@@ -284,11 +266,11 @@ namespace Pokewatch
 
 			if (s_config.PriorityPokemon.Contains(pokemon.Kind))
 			{
-				tweet = string.Format(s_config.PriorityTweet, SpellCheckPokemon(pokemon.Kind), region.Prefix, region.Name, region.Suffix, expiration, mapsLink);
+				tweet = string.Format(s_config.PriorityTweet, SpellCheckPokemon(pokemon.Kind), s_currentScan.Prefix, s_currentScan.Name, s_currentScan.Suffix, expiration, mapsLink);
 			}
 			else
 			{
-				tweet = string.Format(s_config.RegularTweet, SpellCheckPokemon(pokemon.Kind), region.Prefix, region.Name, region.Suffix, expiration, mapsLink);
+				tweet = string.Format(s_config.RegularTweet, SpellCheckPokemon(pokemon.Kind), s_currentScan.Prefix, s_currentScan.Name, s_currentScan.Suffix, expiration, mapsLink);
 			}
 
 			tweet = Regex.Replace(tweet, @"\s\s", @" ");
@@ -297,8 +279,8 @@ namespace Pokewatch
 			if (s_config.TagPokemon && (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Kind, true)) < 138))
 				tweet += " #" + SpellCheckPokemon(pokemon.Kind, true);
 
-			if (s_config.TagRegion && (Tweet.Length(tweet + " #" + Regex.Replace(region.Name, @"\s+", "")) < 138))
-				tweet += " #" + Regex.Replace(region.Name, @"\s+", "");
+			if (s_config.TagRegion && (Tweet.Length(tweet + " #" + Regex.Replace(s_currentScan.Name, @"\s+", "")) < 138))
+				tweet += " #" + Regex.Replace(s_currentScan.Name, @"\s+", "");
 
 			foreach(string tag in s_config.CustomTags)
 			{
@@ -352,6 +334,10 @@ namespace Pokewatch
 		private static Configuration s_config;
 		private static IAuthenticatedUser s_twitterClient;
 		private static Session s_pogoSession;
-
+		private static DateTime s_lastTweet = DateTime.MinValue;
+		private static Queue<FoundPokemon> s_tweetedPokemon = new Queue<FoundPokemon>();
+		private static List<ScanArea> s_scanAreas = new List<ScanArea>();
+		private static ScanArea s_currentScan;
+		private static readonly ManualResetEvent QuitEvent = new ManualResetEvent(false);
 	}
 }

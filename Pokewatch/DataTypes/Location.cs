@@ -9,7 +9,7 @@ namespace Pokewatch.Datatypes
 
 		public bool Equals(Location other)
 		{
-			return Math.Abs(Longitude - other.Longitude) < .001 && Math.Abs(Latitude - other.Latitude) < .001;
+			return Math.Abs(Longitude - other.Longitude) < .00001 && Math.Abs(Latitude - other.Latitude) < .00001;
 		}
 	}
 }

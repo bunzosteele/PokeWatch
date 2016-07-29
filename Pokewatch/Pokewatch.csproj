@@ -59,6 +59,7 @@
     <Compile Include="DataTypes\FoundPokemon.cs" />
     <Compile Include="DataTypes\Location.cs" />
     <Compile Include="DataTypes\PokemonOverride.cs" />
+    <Compile Include="DataTypes\ScanArea.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataTypes\Region.cs" />
