@@ -24,9 +24,16 @@ namespace Pokewatch
 {
 	public class Program
 	{
-		public static void Main(string[] args)
+	    private static int _regionIndex;
+	    private static int _locationInt;
+        static readonly ManualResetEvent _quitEvent = new ManualResetEvent(false);
+
+        public static void Main(string[] args)
 		{
-			try
+		    _regionIndex = 0;
+		    _locationInt = 0;
+
+            try
 			{
 				string json = File.ReadAllText("Configuration.json");
 				s_config = new JavaScriptSerializer().Deserialize<Configuration>(json);
@@ -53,74 +60,108 @@ namespace Pokewatch
 				Log("[+]Sucessfully signed in to PokemonGo, beginning search.");
 			};
 
-			if (!Search())
-				throw new Exception();
-		}
+            s_pogoSession.AccessTokenUpdated += (sender, eventArgs) =>
+            {
+                Log("[+]Access token updated.");
+            };
 
-		private static bool Search()
-		{
-			Queue<FoundPokemon> tweetedPokemon = new Queue<FoundPokemon>();
-			DateTime lastTweet = DateTime.MinValue;
-			Random random = new Random();
-			while (true)
-			{
-				int regionIndex = random.Next(s_config.Regions.Count);
-				if (regionIndex == s_config.Regions.Count)
-					regionIndex = 0;
+            s_pogoSession.Player.Inventory.Update += (sender, eventArgs) =>
+            {
+                Log("[+]Inventory was updated.");
+                Console.WriteLine("Inventory was updated.");
+            };
+            s_pogoSession.Map.Update += (sender, eventArgs) =>
+            {
+                Log("[+]Map was updated.");
+                ProcessMap();
+                NextLocation();
+            };
 
-				Region region = s_config.Regions[regionIndex];
-				Log($"[!]Searching Region: {region.Name}");
-				foreach (Location location in region.Locations)
-				{
-					SetLocation(location);
+            Console.CancelKeyPress += (sender, eArgs) => {
+                _quitEvent.Set();
+                eArgs.Cancel = true;
+            };
+            
+            _quitEvent.WaitOne();
+        }
 
-					//Wait so we don't clobber api and to let the heartbeat catch up to our new location. (Minimum heartbeat time is 4000ms)
-					Thread.Sleep(5000);
-					Log("[!]Searching nearby cells.");
-					RepeatedField<MapCell> mapCells;
-					try
-					{
-						mapCells = s_pogoSession.Map.Cells;
-					}
-					catch
-					{
-						Log("[-]Heartbeat has failed. Terminating Connection.");
-						return false;
-					}
-					foreach (var mapCell in mapCells)
-					{
-						foreach (WildPokemon pokemon in mapCell.WildPokemons)
-						{
-							FoundPokemon foundPokemon = ProcessPokemon(pokemon, tweetedPokemon, lastTweet);
+	    private static void NextLocation()
+	    {
+	        _locationInt++;
+	        if (_locationInt == s_config.Regions[_regionIndex].Locations.Count)
+	        {
+	            _locationInt = 0;
+	            _regionIndex++;
+	            if (_regionIndex == s_config.Regions.Count)
+	            {
+	                _regionIndex = 0;
+	            }
+	        }
 
-							if (foundPokemon == null)
-								continue;
+            Region region = s_config.Regions[_regionIndex];
+            Log($"[!]Searching Region: {region.Name}");
+            Location location = region.Locations[_locationInt];
 
-							string tweet = ComposeTweet(foundPokemon, region);
+            SetLocation(location);
+        }
 
-							try
-							{
-								s_twitterClient.PublishTweet(tweet);
-							}
-							catch(Exception ex)
-							{
-								Log("[-]Tweet failed to publish: " + tweet + " " + ex.Message);
-								continue;
-							}
+        private static bool ProcessMap()
+        {
+            Queue<FoundPokemon> tweetedPokemon = new Queue<FoundPokemon>();
+            DateTime lastTweet = DateTime.MinValue;
 
-							Log("[+]Tweet published: " + tweet);
-							lastTweet = DateTime.Now;
+            Region region = s_config.Regions[_regionIndex];
+            Location location = region.Locations[_locationInt];
 
-							tweetedPokemon.Enqueue(foundPokemon);
-							if (tweetedPokemon.Count > 10)
-								tweetedPokemon.Dequeue();
-						}
-					}
-				}
-				Log("[!]Finished Searching " + region.Name);
-			}
-		}
+            Log("[!]Searching nearby cells.");
+            RepeatedField<MapCell> mapCells;
+            try
+            {
+                mapCells = s_pogoSession.Map.Cells;
+            }
+            catch
+            {
+                Log("[-]Heartbeat has failed. Terminating Connection.");
+                return false;
+            }
+            foreach (var mapCell in mapCells)
+            {
+                foreach (WildPokemon pokemon in mapCell.WildPokemons)
+                {
+                    FoundPokemon foundPokemon = ProcessPokemon(pokemon, tweetedPokemon, lastTweet);
 
+                    if (foundPokemon == null)
+                        continue;
+
+                    string tweet = ComposeTweet(foundPokemon, region);
+
+                    try
+                    {
+                        s_twitterClient.PublishTweet(tweet);
+                        Log("[+]Tweet published: " + tweet);
+                        lastTweet = DateTime.Now;
+                    }
+                    catch (Exception ex)
+                    {
+                        Log("[-]Tweet failed to publish: " + tweet + " " + ex.Message);
+                    }
+                    finally
+                    {
+                        tweetedPokemon.Enqueue(foundPokemon);
+                    }
+
+                    if (tweetedPokemon.Count > 10)
+                    {
+                        tweetedPokemon.Dequeue();
+                    }
+                }
+                
+            }
+            Log("[!]Finished Searching " + region.Name);
+            return true;
+
+        }
+        
 		//Sign in to PokemonGO
 		private static bool PrepareClient()
 		{
@@ -314,5 +355,6 @@ namespace Pokewatch
 		private static Configuration s_config;
 		private static IAuthenticatedUser s_twitterClient;
 		private static Session s_pogoSession;
+
 	}
 }
