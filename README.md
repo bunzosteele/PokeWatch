@@ -96,7 +96,7 @@ DOWNLOAD: https://db.tt/wNDXXmgr
 		Suffix: Same as prefix, but after the Name
 		
 		Locations: List of GPS coordinates that the bot will scan for pokemon in. The bot will identify pokemon within
-			~70 meters of that point. Double clicking on google maps will give you the GPS coordinates.
+			~70 meters of that point. Consider using the LocationGenerator to get coordinates.
 			
 6. ENABLE REBOOTING
 
@@ -115,6 +115,14 @@ DOWNLOAD: https://db.tt/wNDXXmgr
 	   The faster they are found and tweeted, the more time people have to find and catch them.
 	   If you want to scan more locations, you should repeat this process for a second bot, with different GPS locations, but reuse the credentials from Step 3.
            
+           
+###Location Generator
+
+	The location generator is a tool that will allow you to place points on the map and get a json array of coordinates added to your clipboard. To use it, simply open LocationGenerator.html in a browser and right click -> Add Marker where you want to scan. When you are done placing points for a region, select Copy Marker Locations. This will give you an array of Locations that you can paste into your Configuration.json file for a Region.
+	
+	The generator has a default location every time it is refreshed, to save yourself some scrolling around for each region, edit LocationGenerator.html and change the coordinate values on line 115 to something closer to your area.
+	
+	
 ##Credits
 https://github.com/AeonLucid/POGOLib
 
