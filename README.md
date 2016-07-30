@@ -94,7 +94,7 @@ DOWNLOAD: https://db.tt/wNDXXmgr
 		Suffix: Same as prefix, but after the Name
 		
 		Locations: List of GPS coordinates that the bot will scan for pokemon in. The bot will identify pokemon within
-			~200 meters of that point. Double clicking on google maps will give you the GPS coordinates.
+			~70 meters of that point. Double clicking on google maps will give you the GPS coordinates.
 			
 6. ENABLE REBOOTING
 
