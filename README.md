@@ -62,6 +62,8 @@ DOWNLOAD: https://db.tt/wNDXXmgr
 	
 	PriorityPokemon: Pokedex ids for extremely rare pokemon that will be tweeted with an emphasis and will ignore any rate limits.
 	
+	Pokewatch: [true or false] Replace google maps link with Pokewatch link. (Not Recommended.)
+	
 	TagPokemon: [true or false] Should a hashtag for the found pokemon be included.
 	
 	TagRegion: [true or false] Should a hashtag for the region be included.
