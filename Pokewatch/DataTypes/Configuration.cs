@@ -41,6 +41,7 @@ namespace Pokewatch.DataTypes
 		public bool TagPokemon { get; set; }
 		public bool TagRegion { get; set; }
 		public List<string> CustomTags { get; set; }
+		public bool Pokevision { get; set; }
 
 		//Pokemon Name Overrides
 		public List<PokemonOverride> PokemonOverrides { get; set; } 

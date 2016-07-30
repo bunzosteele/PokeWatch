@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web.Script.Serialization;
@@ -118,6 +119,14 @@ namespace Pokewatch
 
 					string tweet = ComposeTweet(foundPokemon);
 
+					if (tweet == null)
+						throw new Exception();
+
+					if (tweet.Length > 140)
+					{
+						Log("[-]Tweet exceeds 140 characters. Consider changing your template.");
+						continue;
+					}
 					try
 					{
 						s_twitterClient.PublishTweet(tweet);
@@ -211,7 +220,7 @@ namespace Pokewatch
 			{
 				Location = new Location { Latitude = pokemon.Latitude, Longitude = pokemon.Longitude},
 				Kind = pokemon.PokemonData.PokemonId,
-				LifeExpectancy = pokemon.TimeTillHiddenMs / 1000
+				LifeExpectancy = (pokemon.TimeTillHiddenMs < 0 ? pokemon.TimeTillHiddenMs + 841345181 : pokemon.TimeTillHiddenMs) / 1000
 			};
 
 			if (s_config.ExcludedPokemon.Contains(foundPokemon.Kind))
@@ -248,66 +257,76 @@ namespace Pokewatch
 			Log("[!]Composing Tweet");
 			string latitude = pokemon.Location.Latitude.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-us"));
 			string longitude = pokemon.Location.Longitude.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-us"));
-			string mapsLink = $"https://www.google.com/maps/place/{latitude},{longitude}";
+			string mapsLink = s_config.Pokevision ? $"https://pokevision.com/#/@{latitude},{longitude}" : $"https://www.google.com/maps/place/{latitude},{longitude}";
 			string expiration = DateTime.Now.AddSeconds(pokemon.LifeExpectancy).ToLocalTime().ToShortTimeString();
 			string tweet = "";
 
-			if (s_config.PriorityPokemon.Contains(pokemon.Kind))
+			try
 			{
-				tweet = string.Format(s_config.PriorityTweet, SpellCheckPokemon(pokemon.Kind), s_currentScan.Prefix, s_currentScan.Name, s_currentScan.Suffix, expiration, mapsLink);
+				tweet = string.Format(s_config.PriorityPokemon.Contains(pokemon.Kind) ? s_config.PriorityTweet : s_config.RegularTweet,
+					SpellCheckPokemon(pokemon.Kind),
+					s_currentScan.Prefix,
+					s_currentScan.Name,
+					s_currentScan.Suffix,
+					expiration,
+					mapsLink);
 			}
-			else
+			catch
 			{
-				tweet = string.Format(s_config.RegularTweet, SpellCheckPokemon(pokemon.Kind), s_currentScan.Prefix, s_currentScan.Name, s_currentScan.Suffix, expiration, mapsLink);
+				Log("[-]Failed to format tweet. If you made customizations, they probably broke it.");
+				return null;
 			}
 
 			tweet = Regex.Replace(tweet, @"\s\s", @" ");
 			tweet = Regex.Replace(tweet, @"\s[!]", @"!");
 
-			if (s_config.TagPokemon && (Tweet.Length(tweet + " #" + SpellCheckPokemon(pokemon.Kind, true)) < 138))
-				tweet += " #" + SpellCheckPokemon(pokemon.Kind, true);
+			Regex hashtag = new Regex("[^a-zA-Z0-9]");
 
-			if (s_config.TagRegion && (Tweet.Length(tweet + " #" + Regex.Replace(s_currentScan.Name, @"\s+", "")) < 138))
-				tweet += " #" + Regex.Replace(s_currentScan.Name, @"\s+", "");
+			if (s_config.TagPokemon && (Tweet.Length(tweet + " #" + hashtag.Replace(SpellCheckPokemon(pokemon.Kind), "")) < 140))
+				tweet += " #" + hashtag.Replace(SpellCheckPokemon(pokemon.Kind), "");
+
+			if (s_config.TagRegion && (Tweet.Length(tweet + " #" + hashtag.Replace(s_currentScan.Name, "")) < 140))
+				tweet += " #" + hashtag.Replace(s_currentScan.Name, "");
 
 			foreach(string tag in s_config.CustomTags)
 			{
-				if(Tweet.Length(tweet + tag) < 138)
-					tweet += " #" + tag;
+				if(Tweet.Length(tweet + " #" + hashtag.Replace(tag, "")) < 140)
+					tweet += " #" + hashtag.Replace(tag, "");
 			}
 
+			byte[] bytes = Encoding.Default.GetBytes(tweet);
+			tweet = Encoding.UTF8.GetString(bytes);
 			Log("[!]Sucessfully composed tweet.");
 			return tweet;
 		}
 
-		//Generate user friendly and hashtag friendly pokemon names
-		private static string SpellCheckPokemon(PokemonId pokemon, bool isHashtag = false)
+		//Generate user friendly pokemon names
+		private static string SpellCheckPokemon(PokemonId pokemon)
 		{
 			string display;
 			switch (pokemon)
 			{
 				case PokemonId.Farfetchd:
-					display = isHashtag ? "Farfetchd" : "Farfetch'd";
+					display = "Farfetch'd";
 					break;
 				case PokemonId.MrMime:
-					display = isHashtag ? "MrMime" : "Mr. Mime";
+					display = "Mr. Mime";
 					break;
 				case PokemonId.NidoranFemale:
-					display = isHashtag ? "Nidoran" : "Nidoran♀";
+					display = "Nidoran♀";
 					break;
 				case PokemonId.NidoranMale:
-					display = isHashtag ? "Nidoran" : "Nidoran♂";
+					display = "Nidoran♂";
 					break;
 				default:
 					display = pokemon.ToString();
 					break;
 			}
-			if (s_config.PokemonOverrides.Any(po => po.Kind == pokemon))
+			if (s_config.PokemonOverrides != null && s_config.PokemonOverrides.Any(po => po.Kind == pokemon))
 			{
 				display = s_config.PokemonOverrides.First(po => po.Kind == pokemon).Display;
 			}
-			Regex regex = new Regex("[^a-zA-Z0-9]");
-			return isHashtag ? regex.Replace(display, "") : display;
+			return display;
 		}
 
 		private static void Log(string message)
