@@ -98,7 +98,7 @@ namespace Pokewatch
 			if (s_scanIndex == s_scanAreas.Count)
 			{
 				s_scanIndex = 0;
-				Log("[!]All Regions Scanned. Restarting.");
+				Log("[!]All Regions Scanned. Starting over.");
 			}
 			s_currentScan = s_scanAreas[s_scanIndex];
 			SetLocation(s_currentScan.Location);
@@ -122,9 +122,9 @@ namespace Pokewatch
 					if (tweet == null)
 						throw new Exception();
 
-					if (tweet.Length > 140)
+					if (Tweet.Length(tweet) > 140)
 					{
-						Log("[-]Tweet exceeds 140 characters. Consider changing your template.");
+						Log("[-]Tweet exceeds 140 characters. Consider changing your template: " + tweet);
 						continue;
 					}
 					try
@@ -144,7 +144,6 @@ namespace Pokewatch
 						s_tweetedPokemon.Dequeue();
 				}
 			}
-			Log($"[!]Scanning: {s_currentScan.Name} ({s_currentScan.Location.Latitude}, {s_currentScan.Location.Longitude})");
 			return true;
 		}
 
@@ -199,7 +198,7 @@ namespace Pokewatch
 			{
 				s_twitterClient = User.GetAuthenticatedUser(userCredentials);
 			}
-			catch
+			catch(Exception ex)
 			{
 				Log("[-]Unable to authenticate Twitter account. Check your internet connection, verify your OAuth credential strings. If your bot is new, Twitter may still be validating your application.");
 				return false;
