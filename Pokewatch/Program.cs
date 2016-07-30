@@ -220,7 +220,7 @@ namespace Pokewatch
 			{
 				Location = new Location { Latitude = pokemon.Latitude, Longitude = pokemon.Longitude},
 				Kind = pokemon.PokemonData.PokemonId,
-				LifeExpectancy = (pokemon.TimeTillHiddenMs < 0 ? pokemon.TimeTillHiddenMs + 841345181 : pokemon.TimeTillHiddenMs) / 1000
+				LifeExpectancy = pokemon.TimeTillHiddenMs / 1000
 			};
 
 			if (s_config.ExcludedPokemon.Contains(foundPokemon.Kind))
