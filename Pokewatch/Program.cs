@@ -47,6 +47,7 @@ namespace Pokewatch
 					Suffix = r.Suffix
 				})).ToList();
 				s_currentScan = s_scanAreas.First();
+				s_scanIndex = 0;
 			}
 			catch
 			{
@@ -92,14 +93,13 @@ namespace Pokewatch
 
 		private static void UpdateLocation()
 		{
-			int scanIndex = s_scanAreas.IndexOf(s_currentScan);
-			scanIndex++;
-			if (scanIndex == s_scanAreas.Count)
+			s_scanIndex++;
+			if (s_scanIndex == s_scanAreas.Count)
 			{
-				scanIndex = 0;
-				Log("[!]All Regions Scanned.");
+				s_scanIndex = 0;
+				Log("[!]All Regions Scanned. Restarting.");
 			}
-			s_currentScan = s_scanAreas[scanIndex];
+			s_currentScan = s_scanAreas[s_scanIndex];
 			SetLocation(s_currentScan.Location);
 			Log($"[!]Scanning: {s_currentScan.Name} ({s_currentScan.Location.Latitude}, {s_currentScan.Location.Longitude})");
 		}
@@ -142,22 +142,12 @@ namespace Pokewatch
 		//Sign in to PokemonGO
 		private static bool PrepareClient()
 		{
-			Location defaultLocation;
-			try
-			{
-				defaultLocation = s_config.Regions.First().Locations.First();
-			}
-			catch
-			{
-				Log("[-]No locations have been supplied.");
-				return false;
-			}
 			if (!s_config.PTCUsername.IsNullOrEmpty() && !s_config.PTCPassword.IsNullOrEmpty())
 			{
 				try
 				{
 					Log("[!]Attempting to sign in to PokemonGo using PTC.");
-					s_pogoSession = Login.GetSession(s_config.PTCUsername, s_config.PTCPassword, LoginProvider.PokemonTrainerClub, defaultLocation.Latitude, defaultLocation.Longitude);
+					s_pogoSession = Login.GetSession(s_config.PTCUsername, s_config.PTCPassword, LoginProvider.PokemonTrainerClub, s_currentScan.Location.Latitude, s_currentScan.Location.Longitude);
 					Log("[+]Sucessfully logged in to PokemonGo using PTC.");
 					return true;
 				}
@@ -171,7 +161,7 @@ namespace Pokewatch
 				try
 				{
 					Log("[!]Attempting to sign in to PokemonGo using Google.");
-					s_pogoSession = Login.GetSession(s_config.GAUsername, s_config.GAPassword, LoginProvider.GoogleAuth, defaultLocation.Latitude, defaultLocation.Longitude);
+					s_pogoSession = Login.GetSession(s_config.GAUsername, s_config.GAPassword, LoginProvider.GoogleAuth, s_currentScan.Location.Latitude, s_currentScan.Location.Longitude);
 					Log("[+]Sucessfully logged in to PokemonGo using Google.");
 					return true;
 				}
@@ -336,6 +326,7 @@ namespace Pokewatch
 		private static Queue<FoundPokemon> s_tweetedPokemon = new Queue<FoundPokemon>();
 		private static List<ScanArea> s_scanAreas = new List<ScanArea>();
 		private static ScanArea s_currentScan;
+		private static int s_scanIndex;
 		private static readonly ManualResetEvent QuitEvent = new ManualResetEvent(false);
 	}
 }
