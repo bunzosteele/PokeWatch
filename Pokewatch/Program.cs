@@ -63,7 +63,7 @@ namespace Pokewatch
 			}
 
 			if (!PrepareTwitterClient())
-				return;
+				throw new Exception();
 
 			Log("[+]Sucessfully signed in to twitter.");
 			if (!PrepareClient())
