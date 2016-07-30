@@ -118,9 +118,9 @@ DOWNLOAD: https://db.tt/wNDXXmgr
            
 ###Location Generator
 
-	The location generator is a tool that will allow you to place points on the map and get a json array of coordinates added to your clipboard. To use it, simply open LocationGenerator.html in a browser and right click -> Add Marker where you want to scan. When you are done placing points for a region, select Copy Marker Locations. This will give you an array of Locations that you can paste into your Configuration.json file for a Region.
+        The location generator is a tool that will allow you to place points on the map and get a json array of coordinates added to your clipboard. To use it, simply open LocationGenerator.html in a browser and right click -> Add Marker where you want to scan. When you are done placing points for a region, select Copy Marker Locations. This will give you an array of Locations that you can paste into your Configuration.json file for a Region.
 	
-	The generator has a default location every time it is refreshed, to save yourself some scrolling around for each region, edit LocationGenerator.html and change the coordinate values on line 115 to something closer to your area.
+        The generator has a default location every time it is refreshed, to save yourself some scrolling around for each region, edit LocationGenerator.html and change the coordinate values on line 115 to something closer to your area.
 	
 	
 ##Credits
