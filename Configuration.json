@@ -1,0 +1,64 @@
+{
+	"PTCUsername": "",
+	"PTCPassword": "",
+	"GAUsername": "",
+	"GAPassword": "",
+	"TwitterConsumerToken": "CONSUMERKEY",
+	"TwitterConsumerSecret": "CONSUMERSECRET",
+	"TwitterAccessToken": "ACCESSTOKEN",
+	"TwitterAccessSecret": "ACCESSSECRET",
+	"RateLimit": 0,
+	"MinimumLifeExpectancy": 300,
+	"ExcludedPokemon": [10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 29, 30, 32, 33, 35, 39, 41, 42, 43, 46, 47, 48, 49, 52, 54, 56, 60, 63, 69, 72, 73, 74, 86, 90, 92, 96, 98, 100, 116, 118, 120, 125, 129, 133],
+	"PriorityPokemon": [3, 6, 9, 26, 38, 59, 62, 65, 68, 78, 80, 94, 103, 105, 106, 107, 112, 113, 115, 122, 130, 131, 132, 142, 143, 144, 145, 146, 149, 150, 151],
+	"Pokevision": false,
+	"TagPokemon": true,
+	"TagRegion": true,
+	"CustomTags": ["PokemonGo", "Bellingham"],
+	"RegularTweet": "A wild {0} appeared!\nIt will be {1} {2} {3} until {4}.\n{5}",
+	"PriorityTweet": "BREAKING NEWS!\n{0} has appeared {1} {2} {3}!\nHurry, it will vanish at {4}!\n{5}",
+	"PokemonOverrides": [{ "Kind": 16, "Display": "BirdBrain"}, { "Kind": 19, "Display":"BarneyMouse"}],
+	"Regions": [{
+		"Name": "Highschool",
+		"Prefix": "around the",
+		"Suffix": "",
+		"Locations": [{
+			"Latitude": 48.757564,
+			"Longitude": -122.474716
+		}, {
+			"Latitude": 48.75755,
+			"Longitude": -122.47183
+		}, {
+			"Latitude": 48.755315,
+			"Longitude": -122.471862
+		}]
+	}, {
+		"Name": "Downtown",
+		"Prefix": "in the",
+		"Suffix": "area",
+		"Locations": [{
+			"Latitude": 48.747813,
+			"Longitude": -122.478256
+		}, {
+			"Latitude": 48.748513,
+			"Longitude": -122.479576
+		}, {
+			"Latitude": 48.749277,
+			"Longitude": -122.478138
+		}, {
+			"Latitude": 48.750331,
+			"Longitude": -122.476668
+		}, {
+			"Latitude": 48.749831,
+			"Longitude": -122.474853
+		}]
+	}, {
+		"Name": "Aslan Brewing",
+		"Prefix": "near the",
+		"Suffix": "Company",
+		"Locations": [{
+			"Latitude": 48.748414,
+			"Longitude": -122.474694
+		}]
+	}]
+}
