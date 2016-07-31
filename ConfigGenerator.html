@@ -131,6 +131,7 @@
 				dlAnchorElem.click();
 			}
 			$scope.AddArea = function () {
+				$scope.save();
 				$scope.configuration.Regions.push({
 					Name: "New Location",
 					Prefix: "",
@@ -140,6 +141,7 @@
 				});
 			};
 			$scope.RemoveArea = function() {
+				$scope.save();
 				$.each($scope.configuration.Regions[this.$index].Markers,function(n,mark){
 					mark.setMap(null);
 					delete mark;
@@ -172,7 +174,14 @@
 				$scope.configuration.Regions[area].Markers.push(circle);
 			}
 			$scope.deleteMarker = function(Lat,Lng,area) {
-				swal("not available yet,\nsorry!");
+				$scope.save();
+				swal({
+					title: "coming soon",
+					text: "not available yet,\nsorry!",
+					type: "error",
+					timer: 2000,
+					showConfirmButton: false
+				});
 			}
 			//Transform Rectangle to Markers
 			$scope.makeCircle = function(){
@@ -212,6 +221,66 @@
 				});
 				google.maps.event.addListener($scope.rectangle, "rightclick",function(event){$scope.showMapMenu(event.latLng,'.squaremenu');});
 			}
+			$("#fileinput").change(function(){
+				var input, file, fr;
+				input = this;
+				if (!input.files) {
+					swal({
+						title: "Error",
+						text: "This browser doesn't seem to support the `files` property of file inputs.",
+						type: "error",
+						timer: 2000,
+						showConfirmButton: false
+					});
+					return;
+				} else if (!input.files[0]) {
+					swal({
+						title: "Warning",
+						text: "Please select a file",
+						type: "warning",
+						timer: 2000,
+						showConfirmButton: false
+					});
+					return;
+				} else {
+					file = input.files[0];
+					fr = new FileReader();
+					fr.onload = receivedText;
+					fr.readAsText(file);
+				}
+
+				function receivedText(e) {
+					lines = e.target.result;
+					$scope.configuration = JSON.parse(lines) || $scope.configuration;
+					$.each($scope.configuration.Regions,function(i,v){
+						v.Markers=[];
+					});
+					$scope.$apply();
+					$scope.save();
+					swal({
+						title: "Success",
+						text: "Coniguration file imported!",
+						type: "success",
+						timer: 2000,
+						showConfirmButton: false
+					}); 
+					try {
+						input.value = null;
+					} catch(err) { }
+					if (input.value) {
+						input.parentNode.replaceChild(input.cloneNode(true), input);
+					}
+				}
+			});
+			
+			$scope.loadFile = function() {
+				if (typeof window.FileReader !== 'function') {
+					alert("The file API isn't supported on this browser yet.");
+					return;
+				}
+				document.getElementById('fileinput').click();
+			}
+
 		});
 		</script>
 		<style type="text/css">
@@ -373,6 +442,7 @@
 	</head>
 	<body ng-controller="PokeWatchController">
 		<a id="downloadAnchorElem" style="display:none"></a>
+		<input type='file' id='fileinput' style="display:none">
 		<input type="text" style="display:none">
 		<input type="password" style="display:none">
 		<div class="container" id="menu" style="max-height:100vh;overflow-y:auto;autoflow-x:hidden;">
@@ -497,6 +567,7 @@
 			</ul>
 			<a class="waves-effect waves-light btn green" ng-click="save()">Save</a>
 			<a class="waves-effect waves-light btn blue" ng-click="download()">Download Config</a>
+			<a class="waves-effect waves-light btn orange" ng-click="loadFile()">Import Config</a>
 			<a class="waves-effect waves-light btn red" ng-click="revert()">Revert</a>
 		</div>
 		<div class="formDiv" id="map_canvas"></div>
@@ -520,5 +591,6 @@
 		</div>
 		<textarea id="LocationsJSON" ></textarea>
 		<textarea id="LocationsJSON_hidden" ></textarea>
+		
 	</body>
 </html>
