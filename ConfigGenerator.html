@@ -135,6 +135,10 @@
 				});
 			};
 			$scope.RemoveArea = function() {
+				$.each($scope.configuration.Regions[this.$index].Markers,function(n,mark){
+					mark.setMap(null);
+					delete mark;
+				});
 				$scope.configuration.Regions.splice(this.$index, 1);
 			}
 			
