@@ -76,6 +76,19 @@
 				position: {"lat":Lat,"lng":Lng},
 				map: map
 			});
+			var circle = new google.maps.Circle({
+				center: {"lat":Lat,"lng":Lng},
+				clickable: true,
+				draggable: false,
+				editable: false,
+				fillColor: '#004de8',
+				fillOpacity: 0.27,
+				map: map,
+				radius: 70.0,
+				strokeColor: '#004de8',
+				strokeOpacity: 0.62,
+				strokeWeight: 1
+			});
 			locations.push({
 				"Latitude": Lat,
 				"Longitude": Lng
