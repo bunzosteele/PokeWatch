@@ -146,8 +146,12 @@
 					radius: 70,
 					draggable:true
 				});
-				google.maps.event.addListener(circle, "rightclick",function(event){$scope.showMapMenu(event.latLng,'.markermenu');});
 				$scope.configuration.Regions[area].Markers.push(circle);
+				google.maps.event.addListener(circle, "rightclick",function(event){
+					this.setMap(null);
+					currentId = $scope.configuration.Regions[area].Markers.indexOf(this);
+					$scope.configuration.Regions[area].Markers.splice(currentId,1);
+				});
 				$scope.getTotal();
 			}
 			$scope.deleteMarker = function(Lat,Lng,area) {
@@ -226,8 +230,8 @@
 				});
 				$scope.getTotal();
 				try{
-					$scope.$apply();
 					Materialize.updateTextFields();
+					$scope.$apply();
 				}catch(err){}
 			};
 			$scope.revert = function() {
@@ -292,7 +296,6 @@
 					try{
 						$('textarea').trigger('autoresize');
 						Materialize.updateTextFields();
-						$scope.$apply();
 					}catch(err){}
 					swal({
 						title: "Success",
@@ -597,10 +600,10 @@
 		<div class="formDiv" id="map_canvas"></div>
 		<div class="mapmenu cmenu">
 			<div class="item addArea" ng-repeat="area in configuration.Regions" data-ng-click="hideContextMenu();addNewMarker();">
-				<div class="label">+ {{area.Name}} marker</div>
+				<div class="label">+ {{area.Name}}</div>
 			</div>
 			<div class="item" data-ng-click="hideContextMenu();makeRectangle();">
-				<div class="label">Mass Marker Area</div>
+				<div class="label">Mass Mark Area</div>
 			</div>
 		</div>
 		<div class="markermenu cmenu">
