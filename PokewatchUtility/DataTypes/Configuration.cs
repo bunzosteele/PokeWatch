@@ -1,18 +1,12 @@
 ﻿using System.Collections.Generic;
-using Pokewatch.Datatypes;
 using POGOProtos.Enums;
 
-namespace Pokewatch.DataTypes
+namespace PokewatchUtility.DataTypes
 {
-	internal sealed class Configuration
+	public sealed class Configuration
 	{
-		//PokemonTrainerClub Login Info
-		public string PTCUsername { get; set; }
-		public string PTCPassword { get; set; }
-
-		//Google Account Login Info
-		public string GAUsername { get; set; }
-		public string GAPassword { get; set; }
+		//PokemonGo Accounts
+		public List<PoGoAccount> PoGoAccounts { get; set; }
 
 		//Twitter OAuth Strings
 		public string TwitterConsumerToken { get; set; }

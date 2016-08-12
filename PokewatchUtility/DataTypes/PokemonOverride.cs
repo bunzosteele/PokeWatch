@@ -1,8 +1,8 @@
 ﻿using POGOProtos.Enums;
 
-namespace Pokewatch.Datatypes
+namespace PokewatchUtility.DataTypes
 {
-	internal sealed class PokemonOverride
+	public sealed class PokemonOverride
 	{
 		public PokemonId Kind { get; set; }
 		public string Display { get; set; }

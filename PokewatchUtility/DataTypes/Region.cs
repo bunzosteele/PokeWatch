@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using POGOProtos.Enums;
 
-namespace Pokewatch.Datatypes
+namespace PokewatchUtility.DataTypes
 {
-	internal sealed class Region : IEquatable<Region>
+	public sealed class Region : IEquatable<Region>
 	{
 		public string Name { get; set; }
 		public string Prefix { get; set; }
 		public string Suffix { get; set; }
 		public List<Location> Locations { get; set; }
+		public List<PokemonId> Exclusions { get; set; }
+		public List<PokemonId> Inclusions { get; set; }
 
 		public bool Equals(Region other)
 		{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
+using PokewatchUtility;
 
 namespace PokewatchLauncher
 {
@@ -22,7 +22,7 @@ namespace PokewatchLauncher
 				EnableRaisingEvents = true
 			};
 			process.Exited += LaunchIfCrashed;
-			Log("[!]Launching: " + process.StartInfo.FileName);
+			PokewatchLogger.Log("[!]Launching: " + process.StartInfo.FileName);
 			process.Start();
 		}
 
@@ -32,24 +32,15 @@ namespace PokewatchLauncher
 			Process process = (Process)o;
 			if (process.ExitCode != 0)
 			{
-				Log("[-]Something went wrong. Waiting 30 seconds to restart:");
+				PokewatchLogger.Log("[-]Something went wrong. Waiting 30 seconds to restart:");
 				Thread.Sleep(30000);
-				Log("[!]Restarting...");
+				PokewatchLogger.Log("[!]Restarting...");
 				Launch();
 			}
 			else
 			{
-				Log("[!]Exiting.");
+				PokewatchLogger.Log("[!]Exiting.");
 				Environment.Exit(0);
-			}
-		}
-
-		private static void Log(string message)
-		{
-			Console.WriteLine(message);
-			using (StreamWriter w = File.AppendText("log.txt"))
-			{
-				w.WriteLine(DateTime.Now + ": " + message);
 			}
 		}
 	}

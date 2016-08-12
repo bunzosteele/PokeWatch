@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pokewatch", "Pokewatch\Poke
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokewatchLauncher", "PokewatchLauncher\PokewatchLauncher.csproj", "{865A75D0-2E75-41B1-BD80-E540CF3466F6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PogoTos", "PogoTos\PogoTos.csproj", "{CE8AC05F-C3D0-410B-AC84-1629573FC544}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokewatchUtility", "PokewatchUtility\PokewatchUtility.csproj", "{784AB8C5-707D-4F58-9F54-A752FCEFFD1C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{865A75D0-2E75-41B1-BD80-E540CF3466F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{865A75D0-2E75-41B1-BD80-E540CF3466F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{865A75D0-2E75-41B1-BD80-E540CF3466F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE8AC05F-C3D0-410B-AC84-1629573FC544}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE8AC05F-C3D0-410B-AC84-1629573FC544}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE8AC05F-C3D0-410B-AC84-1629573FC544}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE8AC05F-C3D0-410B-AC84-1629573FC544}.Release|Any CPU.Build.0 = Release|Any CPU
+		{784AB8C5-707D-4F58-9F54-A752FCEFFD1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{784AB8C5-707D-4F58-9F54-A752FCEFFD1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{784AB8C5-707D-4F58-9F54-A752FCEFFD1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{784AB8C5-707D-4F58-9F54-A752FCEFFD1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

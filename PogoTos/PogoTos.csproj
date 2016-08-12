@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{865A75D0-2E75-41B1-BD80-E540CF3466F6}</ProjectGuid>
+    <ProjectGuid>{CE8AC05F-C3D0-410B-AC84-1629573FC544}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PokewatchLauncher</RootNamespace>
-    <AssemblyName>PokewatchLauncher</AssemblyName>
+    <RootNamespace>PogoTos</RootNamespace>
+    <AssemblyName>PogoTos</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,6 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Google.Protobuf">
+      <HintPath>..\Pokewatch\lib\Google.Protobuf.dll</HintPath>
+    </Reference>
+    <Reference Include="POGOLib">
+      <HintPath>..\Pokewatch\lib\POGOLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

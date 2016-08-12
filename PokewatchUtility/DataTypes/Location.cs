@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Pokewatch.Datatypes
+namespace PokewatchUtility.DataTypes
 {
-	internal sealed class Location : IEquatable<Location>
+	public sealed class Location : IEquatable<Location>
 	{
 		public double Longitude { get; set; }
 		public double Latitude { get; set; }

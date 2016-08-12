@@ -1,9 +1,9 @@
 ﻿using System;
 using POGOProtos.Enums;
 
-namespace Pokewatch.Datatypes
+namespace PokewatchUtility.DataTypes
 {
-	internal sealed class FoundPokemon : IEquatable<FoundPokemon>
+	public sealed class FoundPokemon : IEquatable<FoundPokemon>
 	{
 		public PokemonId Kind { get; set; }
 		public Location Location { get; set; }

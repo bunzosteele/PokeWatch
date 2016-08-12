@@ -1,9 +1,8 @@
 ﻿using System;
-using Pokewatch.Datatypes;
 
-namespace Pokewatch.DataTypes
+namespace PokewatchUtility.DataTypes
 {
-	internal sealed class ScanArea : IEquatable<ScanArea>
+	public sealed class ScanArea : IEquatable<ScanArea>
 	{
 		public string Name { get; set; }
 		public string Prefix { get; set; }
