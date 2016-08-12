@@ -4,6 +4,32 @@
         <name>S2Geometry</name>
     </assembly>
     <members>
+        <member name="M:Google.Common.Geometry.DataStructures.KeyValuePairEqualityComparer`2.#ctor">
+            <summary>
+            Create an entry equalityComparer using the default equalityComparer for keys
+            </summary>
+        </member>
+        <member name="M:Google.Common.Geometry.DataStructures.KeyValuePairEqualityComparer`2.#ctor(System.Collections.Generic.IEqualityComparer{`0})">
+            <summary>
+            Create an entry equalityComparer from a specified item equalityComparer for the keys
+            </summary>
+            <param name="keyequalityComparer">The key equalityComparer</param>
+        </member>
+        <member name="M:Google.Common.Geometry.DataStructures.KeyValuePairEqualityComparer`2.GetHashCode(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Get the hash code of the entry
+            </summary>
+            <param name="entry">The entry</param>
+            <returns>The hash code of the key</returns>
+        </member>
+        <member name="M:Google.Common.Geometry.DataStructures.KeyValuePairEqualityComparer`2.Equals(System.Collections.Generic.KeyValuePair{`0,`1},System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Test two entries for equality
+            </summary>
+            <param name="entry1">First entry</param>
+            <param name="entry2">Second entry</param>
+            <returns>True if keys are equal</returns>
+        </member>
         <member name="F:Google.Common.Geometry.DoubleConsts.SignificandWidth">
             The number of logical bits in the significand of a
             <code>double</code> number, including the implicit bit.
@@ -39,6 +65,18 @@
                 restricted to methods that are useful for computing approximations.
             </summary>
         </member>
+        <member name="P:Google.Common.Geometry.IS2Region.CapBound">
+            <summary>
+                Return a bounding spherical cap.
+            </summary>
+            <value></value>
+        </member>
+        <member name="P:Google.Common.Geometry.IS2Region.RectBound">
+            <summary>
+                Return a bounding latitude-longitude rectangle.
+            </summary>
+            <value></value>
+        </member>
         <member name="M:Google.Common.Geometry.IS2Region.Contains(Google.Common.Geometry.S2Cell)">
             <summary>
                 If this method returns true, the region completely contains the given cell.
@@ -57,18 +95,6 @@
             <param name="cell"></param>
             <returns></returns>
         </member>
-        <member name="P:Google.Common.Geometry.IS2Region.CapBound">
-            <summary>
-                Return a bounding spherical cap.
-            </summary>
-            <value></value>
-        </member>
-        <member name="P:Google.Common.Geometry.IS2Region.RectBound">
-            <summary>
-                Return a bounding latitude-longitude rectangle.
-            </summary>
-            <value></value>
-        </member>
         <member name="T:Google.Common.Geometry.R1Interval">
             <summary>
                 An R1Interval represents a closed, bounded interval on the real line. It is
@@ -81,6 +107,10 @@
                 Returns an empty interval. (Any interval where lo > hi is considered empty.)
             </summary>
         </member>
+        <member name="P:Google.Common.Geometry.R1Interval.Length">
+            Return the length of the interval. The length of an empty interval is
+            negative.
+        </member>
         <member name="M:Google.Common.Geometry.R1Interval.FromPoint(System.Double)">
             Convenience method to construct an interval containing a single point.
         </member>
@@ -90,6 +120,7 @@
             calling AddPoint() twice, but it is more efficient.
         </member>
         <member name="M:Google.Common.Geometry.R1Interval.Contains(System.Double)">
+            Return true if the interval is empty, i.e. it contains no points.
             Return the center of the interval. For empty intervals, the result is
             arbitrary.
         </member>
@@ -129,10 +160,6 @@
              is at most the given tolerance.
             
         </member>
-        <member name="P:Google.Common.Geometry.R1Interval.Length">
-            Return the length of the interval. The length of an empty interval is
-            negative.
-        </member>
         <member name="M:Google.Common.Geometry.R2Vector.#ctor(System.Collections.Generic.IList{System.Double})">
             <summary>
                 Point as a list of 2; x is index 0, y is index 1
@@ -163,6 +190,31 @@
         <member name="M:Google.Common.Geometry.S1Interval.#ctor(System.Double,System.Double,System.Boolean)">
             Internal constructor that assumes that both arguments are in the correct
             range, i.e. normalization from -Pi to Pi is already done.
+        </member>
+        <member name="P:Google.Common.Geometry.S1Interval.IsValid">
+            An interval is valid if neither bound exceeds Pi in absolute value, and the
+            value -Pi appears only in the Empty() and Full() intervals.
+        </member>
+        <member name="P:Google.Common.Geometry.S1Interval.IsFull">
+            Return true if the interval contains all points on the unit circle. 
+        </member>
+        <member name="P:Google.Common.Geometry.S1Interval.IsEmpty">
+            Return true if the interval is empty, i.e. it contains no points. 
+        </member>
+        <member name="P:Google.Common.Geometry.S1Interval.Center">
+            Return the midpoint of the interval. For full and empty intervals, the
+            result is arbitrary.
+        </member>
+        <member name="P:Google.Common.Geometry.S1Interval.Length">
+            Return the length of the interval. The length of an empty interval is
+            negative.
+        </member>
+        <member name="P:Google.Common.Geometry.S1Interval.Complement">
+            Return the complement of the interior of the interval. An interval and its
+            complement have the same boundary but do not share any interior values. The
+            complement operator is not a bijection, since the complement of a singleton
+            interval (containing a single value) is the same as the complement of an
+            empty interval.
         </member>
         <member name="M:Google.Common.Geometry.S1Interval.FromPointPair(System.Double,System.Double)">
             Convenience method to construct the minimal interval containing the two
@@ -228,38 +280,30 @@
             it is more numerically stable (it does not lose precision for very small
             positive distances).
         </member>
-        <member name="P:Google.Common.Geometry.S1Interval.IsValid">
-            An interval is valid if neither bound exceeds Pi in absolute value, and the
-            value -Pi appears only in the Empty() and Full() intervals.
-        </member>
-        <member name="P:Google.Common.Geometry.S1Interval.IsFull">
-            Return true if the interval contains all points on the unit circle. 
-        </member>
-        <member name="P:Google.Common.Geometry.S1Interval.IsEmpty">
-            Return true if the interval is empty, i.e. it contains no points. 
-        </member>
-        <member name="P:Google.Common.Geometry.S1Interval.Center">
-            Return the midpoint of the interval. For full and empty intervals, the
-            result is arbitrary.
-        </member>
-        <member name="P:Google.Common.Geometry.S1Interval.Length">
-            Return the length of the interval. The length of an empty interval is
-            negative.
-        </member>
-        <member name="P:Google.Common.Geometry.S1Interval.Complement">
-            Return the complement of the interior of the interval. An interval and its
-            complement have the same boundary but do not share any interior values. The
-            complement operator is not a bijection, since the complement of a singleton
-            interval (containing a single value) is the same as the complement of an
-            empty interval.
-        </member>
-        <member name="F:Google.Common.Geometry.S2._PosToOrientation">
-            Mapping Hilbert traversal order to orientation adjustment mask. 
-        </member>
+        <!-- Badly formed XML comment ignored for member "F:Google.Common.Geometry.S2._PosToOrientation" -->
         <member name="F:Google.Common.Geometry.S2._PosToIj">
+             Returns an XOR bit mask indicating how the orientation of a child subcell
+             is related to the orientation of its parent cell. The returned value can
+             be XOR'd with the parent cell's orientation to give the orientation of
+             the child cell.
+            
+             @param position the position of the subcell in the Hilbert traversal, in
+                 the range [0,3].
+             @return a bit mask containing some combination of {@link #SWAP_MASK} and
+                 {@link #INVERT_MASK}.
+             @throws IllegalArgumentException if position is out of bounds.
             Mapping from cell orientation + Hilbert traversal to IJ-index. 
         </member>
         <member name="F:Google.Common.Geometry.S2._IjToPos">
+             Return the IJ-index of the subcell at the given position in the Hilbert
+             curve traversal with the given orientation. This is the inverse of
+             {@link #ijToPos}.
+            
+             @param orientation the subcell orientation, in the range [0,3].
+             @param position the position of the subcell in the Hilbert traversal, in
+                 the range [0,3].
+             @return the IJ-index where {@code 0->(0,0), 1->(0,1), 2->(1,0), 3->(1,1)}.
+             @throws IllegalArgumentException if either parameter is out of bounds.
             Mapping from Hilbert traversal order + cell orientation to IJ-index. 
         </member>
         <member name="M:Google.Common.Geometry.S2.IjToPos(System.Int32,System.Int32)">
@@ -274,6 +318,11 @@
              @throws IllegalArgumentException if either parameter is out of bounds.
         </member>
         <member name="M:Google.Common.Geometry.S2.IsUnitLength(Google.Common.Geometry.S2Point)">
+            Defines an area or a length cell metric.
+            Return a unique "origin" on the sphere for operations that need a fixed
+            reference point. It should *not* be a point that is commonly used in edge
+            tests in order to avoid triggering code to handle degenerate cases. (This
+            rules out the north and south poles.)
             Return true if the given point is approximately unit length (this is mainly
             useful for assertions).
         </member>
@@ -445,6 +494,26 @@
         <member name="F:Google.Common.Geometry.S2Cap.Full">
             Return a full cap, i.e. a cap that contains all points. 
         </member>
+        <member name="P:Google.Common.Geometry.S2Cap.Angle">
+            Return the cap opening angle in radians, or a negative number for empty
+            caps.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Cap.IsValid">
+            We allow negative heights (to represent empty caps) but not heights greater
+            than 2.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Cap.IsEmpty">
+            Return true if the cap is empty, i.e. it contains no points. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2Cap.IsFull">
+            Return true if the cap is full, i.e. it contains all points. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2Cap.Complement">
+            Return the complement of the interior of the cap. A cap and its complement
+            have the same boundary but do not share any interior points. The complement
+            operator is not a bijection, since the complement of a singleton cap
+            (containing a single point) is the same as the complement of an empty cap.
+        </member>
         <member name="M:Google.Common.Geometry.S2Cap.FromAxisHeight(Google.Common.Geometry.S2Point,System.Double)">
             Create a cap given its axis and the cap height, i.e. the maximum projected
             distance along the cap axis from the cap center. 'axis' should be a
@@ -460,6 +529,7 @@
             unit-length vector, and 'area' should be between 0 and 4 * M_PI.
         </member>
         <member name="M:Google.Common.Geometry.S2Cap.Contains(Google.Common.Geometry.S2Cap)">
+            Return an empty cap, i.e. a cap that contains no points. 
             Return true if and only if this cap contains the given other cap (in a set
             containment sense, e.g. every cap contains the empty cap).
         </member>
@@ -486,26 +556,6 @@
             Return true if the cap axis and height differ by at most "max_error" from
             the given cap "other".
         </member>
-        <member name="P:Google.Common.Geometry.S2Cap.Angle">
-            Return the cap opening angle in radians, or a negative number for empty
-            caps.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Cap.IsValid">
-            We allow negative heights (to represent empty caps) but not heights greater
-            than 2.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Cap.IsEmpty">
-            Return true if the cap is empty, i.e. it contains no points. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2Cap.IsFull">
-            Return true if the cap is full, i.e. it contains all points. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2Cap.Complement">
-            Return the complement of the interior of the cap. A cap and its complement
-            have the same boundary but do not share any interior points. The complement
-            operator is not a bijection, since the complement of a singleton cap
-            (containing a single point) is the same as the complement of an empty cap.
-        </member>
         <member name="T:Google.Common.Geometry.S2Cell">
              An S2Cell is an S2Region object that represents a cell. Unlike S2CellIds, it
              supports efficient containment and intersection tests. However, it is also a
@@ -518,6 +568,12 @@
         <member name="M:Google.Common.Geometry.S2Cell.#ctor(Google.Common.Geometry.S2CellId)">
             An S2Cell always corresponds to a particular S2CellId. The other
             constructors are just convenience methods.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Cell.CenterUv">
+            Return the center of the cell in (u,v) coordinates (see {@code
+            S2Projections}). Note that the center of the cell is defined as the point
+            at which it is recursively subdivided into four children; in general, it is
+            not at the midpoint of the (u,v) rectangle covered by the cell
         </member>
         <member name="M:Google.Common.Geometry.S2Cell.GetVertexRaw(System.Int32)">
             Return the k-th vertex of the cell (k = 0,1,2,3). Vertices are returned in
@@ -539,6 +595,11 @@
              except that it is more than two times faster.
         </member>
         <member name="M:Google.Common.Geometry.S2Cell.AverageArea(System.Int32)">
+            Return the direction vector corresponding to the center in (s,t)-space of
+            the given cell. This is the point at which the cell is divided into four
+            subcells; it is not necessarily the centroid of the cell in (u,v)-space or
+            (x,y,z)-space. The point returned by GetCenterRaw is not necessarily unit
+            length.
             Return the average area for cells at the given level.
         </member>
         <member name="M:Google.Common.Geometry.S2Cell.AverageArea">
@@ -556,12 +617,6 @@
             Return the area of this cell as accurately as possible. This method is more
             expensive but it is accurate to 6 digits of precision even for leaf cells
             (whose area is approximately 1e-18).
-        </member>
-        <member name="P:Google.Common.Geometry.S2Cell.CenterUv">
-            Return the center of the cell in (u,v) coordinates (see {@code
-            S2Projections}). Note that the center of the cell is defined as the point
-            at which it is recursively subdivided into four children; in general, it is
-            not at the midpoint of the (u,v) rectangle covered by the cell
         </member>
         <member name="T:Google.Common.Geometry.S2CellId">
              An S2CellId is a 64-bit unsigned integer that uniquely identifies a cell in
@@ -598,9 +653,48 @@
             Useful for creating indexes.
         </member>
         <member name="F:Google.Common.Geometry.S2CellId._id">
+            This is the offset required to wrap around from the beginning of the
+            Hilbert curve to the end or vice versa; see next_wrap() and prev_wrap().
             The id of the cell.
         </member>
+        <member name="P:Google.Common.Geometry.S2CellId.IsValid">
+            Return true if id() represents a valid cell. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.Face">
+            Which cube face this cell belongs to, in the range 0..5. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.Position">
+            The position of the cell center along the Hilbert curve over this face, in
+            the range 0..(2**kPosBits-1).
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.Level">
+            Return the subdivision level of the cell (range 0..MAX_LEVEL). 
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.IsLeaf">
+            Return true if this is a leaf cell (more efficient than checking whether
+            level() == MAX_LEVEL).
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.IsFace">
+            Return true if this is a top-level face cell (more efficient than checking
+            whether level() == 0).
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.Previous">
+            Return the previous cell at the same level along the Hilbert curve. Works
+            correctly when advancing from one face to the next, but does *not* wrap
+            around from the last face to the first or vice versa.
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.NextWithWrap">
+            Like next(), but wraps around from the last face to the first and vice
+            versa. Should *not* be used for iteration in conjunction with
+            child_begin(), child_end(), Begin(), or End().
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellId.PreviousWithWrap">
+            Like prev(), but wraps around from the last face to the first and vice
+            versa. Should *not* be used for iteration in conjunction with
+            child_begin(), child_end(), Begin(), or End().
+        </member>
         <member name="M:Google.Common.Geometry.S2CellId.FromFacePosLevel(System.Int32,System.UInt64,System.Int32)">
+            The default constructor returns an invalid cell id. 
             Return a cell given its face (range 0..5), 61-bit Hilbert curve position
             within that face, and level (range 0..MAX_LEVEL). The given position will
             be modified to correspond to the Hilbert curve position at the center of
@@ -622,6 +716,7 @@
             Return the S2LatLng corresponding to the center of the given cell. 
         </member>
         <member name="M:Google.Common.Geometry.S2CellId.ChildPosition(System.Int32)">
+            The 64-bit unique identifier for this cell. 
             Return the child position (0..3) of this cell's ancestor at the given
             level, relative to its parent. The argument should be in the range
             1..MAX_LEVEL. For example, child_position(1) returns the position of this
@@ -664,6 +759,9 @@
              @return the encoded cell id
         </member>
         <member name="M:Google.Common.Geometry.S2CellId.OverflowInParse(System.UInt64,System.Int32,System.Int32)">
+            Returns true if (current * 10) + digit is a number too large to be
+            represented by an unsigned long.  This is useful for detecting overflow
+            while parsing a string representation of a number.
             Returns true if (current * radix) + digit is a number too large to be
             represented by an unsigned long.  This is useful for detecting overflow
             while parsing a string representation of a number.
@@ -713,42 +811,6 @@
             Public helper function that calls FromFaceIJ if sameFace is true, or
             FromFaceIJWrap if sameFace is false.
         </member>
-        <member name="P:Google.Common.Geometry.S2CellId.IsValid">
-            Return true if id() represents a valid cell. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.Face">
-            Which cube face this cell belongs to, in the range 0..5. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.Position">
-            The position of the cell center along the Hilbert curve over this face, in
-            the range 0..(2**kPosBits-1).
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.Level">
-            Return the subdivision level of the cell (range 0..MAX_LEVEL). 
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.IsLeaf">
-            Return true if this is a leaf cell (more efficient than checking whether
-            level() == MAX_LEVEL).
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.IsFace">
-            Return true if this is a top-level face cell (more efficient than checking
-            whether level() == 0).
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.Previous">
-            Return the previous cell at the same level along the Hilbert curve. Works
-            correctly when advancing from one face to the next, but does *not* wrap
-            around from the last face to the first or vice versa.
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.NextWithWrap">
-            Like next(), but wraps around from the last face to the first and vice
-            versa. Should *not* be used for iteration in conjunction with
-            child_begin(), child_end(), Begin(), or End().
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellId.PreviousWithWrap">
-            Like prev(), but wraps around from the last face to the first and vice
-            versa. Should *not* be used for iteration in conjunction with
-            child_begin(), child_end(), Begin(), or End().
-        </member>
         <member name="T:Google.Common.Geometry.S2CellUnion">
              Normalizes the cell union by discarding cells that are contained by other
              cells, replacing groups of 4 child cells by their parent cell whenever
@@ -760,6 +822,31 @@
             
              @return true if the normalize operation had any effect on the cell union,
                      false if the union was already normalized
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellUnion.AverageBasedArea">
+             Approximate this cell union's area by summing the average area of
+             each contained cell's average area, using {@link S2Cell#averageArea()}.
+             This is equivalent to the number of leaves covered, multiplied by
+             the average area of a leaf.
+             Note that {@link S2Cell#averageArea()} does not take into account
+             distortion of cell, and thus may be off by up to a factor of 1.7.
+             NOTE: Since this is proportional to LeafCellsCovered(), it is
+             always better to use the other function if all you care about is
+             the relative average area between objects.
+            
+             @return the sum of the average area of each contained cell's average area
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellUnion.ApproxArea">
+             Calculates this cell union's area by summing the approximate area for each
+             contained cell, using {@link S2Cell#approxArea()}.
+            
+             @return approximate area of the cell union
+        </member>
+        <member name="P:Google.Common.Geometry.S2CellUnion.ExactArea">
+             Calculates this cell union's area by summing the exact area for each
+             contained cell, using the {@link S2Cell#exactArea()}.
+            
+             @return the exact area of the cell union
         </member>
         <member name="M:Google.Common.Geometry.S2CellUnion.MayIntersect(Google.Common.Geometry.S2Cell)">
             This is a fast operation (logarithmic in the size of the cell union). 
@@ -784,6 +871,7 @@
             Convenience methods for accessing the individual cell ids. 
         </member>
         <member name="M:Google.Common.Geometry.S2CellUnion.Denormalize(System.Int32,System.Int32,System.Collections.Generic.ICollection{Google.Common.Geometry.S2CellId})">
+            Direct access to the underlying vector for iteration . 
              Replaces "output" with an expanded version of the cell union where any
              cells whose level is less than "min_level" or where (level - min_level) is
              not a multiple of "level_mod" are replaced by their children, until either
@@ -811,6 +899,7 @@
             operation (logarithmic in the size of the cell union).
         </member>
         <member name="M:Google.Common.Geometry.S2CellUnion.Intersects(Google.Common.Geometry.S2CellUnion)">
+            This is a fast operation (logarithmic in the size of the cell union). 
             Return true if this cell union contain/intersects the given other cell
             union.
         </member>
@@ -860,6 +949,10 @@
             (logarithmic in the size of the cell union).
         </member>
         <member name="M:Google.Common.Geometry.S2CellUnion.Normalize">
+             The number of leaf cells covered by the union.
+             This will be no more than 6*2^60 for the whole sphere.
+            
+             @return the number of leaf cells covered by the union
              Normalizes the cell union by discarding cells that are contained by other
              cells, replacing groups of 4 child cells by their parent cell whenever
              possible, and sorting all the cell ids in increasing order. Returns true if
@@ -870,31 +963,6 @@
             
              @return true if the normalize operation had any effect on the cell union,
                      false if the union was already normalized
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellUnion.AverageBasedArea">
-             Approximate this cell union's area by summing the average area of
-             each contained cell's average area, using {@link S2Cell#averageArea()}.
-             This is equivalent to the number of leaves covered, multiplied by
-             the average area of a leaf.
-             Note that {@link S2Cell#averageArea()} does not take into account
-             distortion of cell, and thus may be off by up to a factor of 1.7.
-             NOTE: Since this is proportional to LeafCellsCovered(), it is
-             always better to use the other function if all you care about is
-             the relative average area between objects.
-            
-             @return the sum of the average area of each contained cell's average area
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellUnion.ApproxArea">
-             Calculates this cell union's area by summing the approximate area for each
-             contained cell, using {@link S2Cell#approxArea()}.
-            
-             @return approximate area of the cell union
-        </member>
-        <member name="P:Google.Common.Geometry.S2CellUnion.ExactArea">
-             Calculates this cell union's area by summing the exact area for each
-             contained cell, using the {@link S2Cell#exactArea()}.
-            
-             @return the exact area of the cell union
         </member>
         <member name="T:Google.Common.Geometry.S2Edge">
              An abstract directed edge from one S2Point to another S2Point.
@@ -918,6 +986,8 @@
             <code>cells</code>.
         </member>
         <member name="F:Google.Common.Geometry.S2EdgeIndex._indexComputed">
+            No cell strictly below this level appears in mapping. Initially leaf level,
+            that's the minimum level at which we will ever look for test edges.
             Has the index been computed already?
         </member>
         <member name="F:Google.Common.Geometry.S2EdgeIndex._queryCount">
@@ -977,6 +1047,12 @@
               If m = 100, 30 queries will give m*n*testCost = m * costInsert = 100ms,
              while the marginal cost to find is 3ms. Thus, this is a reasonable thing to
              do.
+        </member>
+        <member name="P:Google.Common.Geometry.S2EdgeIndex.NumEdges">
+            Overwrite these functions to give access to the underlying data. The
+            function getNumEdges() returns the number of edges in the index, while
+            edgeFrom(index) and edgeTo(index) return the "from" and "to" endpoints of
+            the edge at the given index.
         </member>
         <member name="M:Google.Common.Geometry.S2EdgeIndex.FindCandidateCrossings(Google.Common.Geometry.S2Point,Google.Common.Geometry.S2Point,System.Collections.Generic.IList{System.Int32})">
             Appends to "candidateCrossings" all edge references which may cross the
@@ -1040,19 +1116,17 @@
              </summary>
              <returns></returns>
         </member>
-        <member name="P:Google.Common.Geometry.S2EdgeIndex.NumEdges">
-            Overwrite these functions to give access to the underlying data. The
-            function getNumEdges() returns the number of edges in the index, while
-            edgeFrom(index) and edgeTo(index) return the "from" and "to" endpoints of
-            the edge at the given index.
-        </member>
         <member name="F:Google.Common.Geometry.S2EdgeIndex.DataEdgeIterator._candidates">
             The structure containing the data edges.
         </member>
         <member name="F:Google.Common.Geometry.S2EdgeIndex.DataEdgeIterator._currentIndex">
+            Tells whether getCandidates() obtained the candidates through brute force
+            iteration or using the quad tree structure.
             Index of the current edge and of the edge before the last next() call.
         </member>
         <member name="F:Google.Common.Geometry.S2EdgeIndex.DataEdgeIterator._currentIndexInCandidates">
+            Cache of edgeIndex.getNumEdges() so that hasNext() doesn't make an extra
+            call
             Index within array above. We have: currentIndex =
             candidates.get(currentIndexInCandidates).
         </member>
@@ -1079,6 +1153,8 @@
             measured by the unittest in 1,000,000 trials is less than 3e-16.
         </member>
         <member name="M:Google.Common.Geometry.S2EdgeUtil.SimpleCrossing(Google.Common.Geometry.S2Point,Google.Common.Geometry.S2Point,Google.Common.Geometry.S2Point,Google.Common.Geometry.S2Point)">
+            This class allows a vertex chain v0, v1, v2, ... to be efficiently tested
+            for intersection with a given fixed edge AB.
              Return true if edge AB crosses CD at a point that is interior to both
              edges. Properties:
             
@@ -1180,6 +1256,8 @@
             0 otherwise.
         </member>
         <member name="P:Google.Common.Geometry.RectBounder.Bound">
+            This method is called to add each vertex to the chain. 'b' must point to
+            fixed storage that persists for the lifetime of the RectBounder.
             Return the bounding rectangle of the edge chain that connects the
             vertices defined so far.
         </member>
@@ -1238,6 +1316,26 @@
             
              TODO(dbeaumont): Make this a static factory method (fromPoint() ?).
         </member>
+        <member name="P:Google.Common.Geometry.S2LatLng.LatRadians">
+            Returns the latitude of this point as radians. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2LatLng.LatDegrees">
+            Returns the latitude of this point as degrees. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2LatLng.Lng">
+            Returns the longitude of this point as a new S1Angle. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2LatLng.LngRadians">
+            Returns the longitude of this point as radians. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2LatLng.LngDegrees">
+            Returns the longitude of this point as degrees. 
+        </member>
+        <member name="P:Google.Common.Geometry.S2LatLng.IsValid">
+            Return true if the latitude is between -90 and 90 degrees inclusive and the
+            longitude is between -180 and 180 degrees inclusive.
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Google.Common.Geometry.S2LatLng.Normalized" -->
         <member name="M:Google.Common.Geometry.S2LatLng.FromRadians(System.Double,System.Double)">
             Approximate "effective" radius of the Earth in meters.
         </member>
@@ -1276,26 +1374,6 @@
             point. This corresponds to a distance of less than {@code 1cm} at the
             surface of the Earth.
         </member>
-        <member name="P:Google.Common.Geometry.S2LatLng.LatRadians">
-            Returns the latitude of this point as radians. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2LatLng.LatDegrees">
-            Returns the latitude of this point as degrees. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2LatLng.Lng">
-            Returns the longitude of this point as a new S1Angle. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2LatLng.LngRadians">
-            Returns the longitude of this point as radians. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2LatLng.LngDegrees">
-            Returns the longitude of this point as degrees. 
-        </member>
-        <member name="P:Google.Common.Geometry.S2LatLng.IsValid">
-            Return true if the latitude is between -90 and 90 degrees inclusive and the
-            longitude is between -180 and 180 degrees inclusive.
-        </member>
-        <!-- Badly formed XML comment ignored for member "P:Google.Common.Geometry.S2LatLng.Normalized" -->
         <member name="T:Google.Common.Geometry.S2LatLngRect">
              An S2LatLngRect represents a latitude-longitude rectangle. It is capable of
              representing the empty and full rectangles as well as single points.
@@ -1317,6 +1395,13 @@
         <member name="M:Google.Common.Geometry.S2LatLngRect.#ctor(Google.Common.Geometry.R1Interval,Google.Common.Geometry.S1Interval)">
             Construct a rectangle from latitude and longitude intervals. 
         </member>
+        <member name="P:Google.Common.Geometry.S2LatLngRect.IsEmpty">
+            Return true if the rectangle is empty, i.e. it contains no points at all.
+        </member>
+        <member name="P:Google.Common.Geometry.S2LatLngRect.IsInverted">
+            Return true if lng_.lo() > lng_.hi(), i.e. the rectangle crosses the 180
+            degree latitude line.
+        </member>
         <member name="M:Google.Common.Geometry.S2LatLngRect.MayIntersect(Google.Common.Geometry.S2Cell)">
             This test is cheap but is NOT exact. Use Intersects() if you want a more
             accurate and more expensive test. Note that when this method is used by an
@@ -1325,6 +1410,7 @@
             goes up as the cells get smaller.
         </member>
         <member name="M:Google.Common.Geometry.S2LatLngRect.FromCenterSize(Google.Common.Geometry.S2LatLng,Google.Common.Geometry.S2LatLng)">
+            The canonical empty rectangle 
             Construct a rectangle from a center point (in lat-lng space) and size in
             each dimension. If size.Lng is greater than 360 degrees it is clamped,
             and latitudes greater than +/- 90 degrees are also clamped. So for example,
@@ -1346,9 +1432,15 @@
             an edge can be larger than the bounding rectangle of its endpoints.
         </member>
         <member name="M:Google.Common.Geometry.S2LatLngRect.GetVertex(System.Int32)">
+             Return true if the rectangle is valid, which essentially just means that
+             the latitude bounds do not exceed Pi/2 in absolute value and the longitude
+             bounds do not exceed Pi in absolute value.
+            
             Return the k-th vertex of the rectangle (k = 0,1,2,3) in CCW order. 
         </member>
         <member name="M:Google.Common.Geometry.S2LatLngRect.GetDistance(Google.Common.Geometry.S2LatLng)">
+            Return the center of the rectangle in latitude-longitude space (in general
+            this is not the center of the region on the sphere).
             Return the minimum distance (measured along the surface of the sphere)
             from a given point to the rectangle (both its boundary and its interior).
             The latLng must be valid.
@@ -1358,6 +1450,8 @@
             the given S2LatLngRect. Both S2LatLngRects must be non-empty.
         </member>
         <member name="M:Google.Common.Geometry.S2LatLngRect.Contains(Google.Common.Geometry.S2LatLng)">
+            Return the width and height of this rectangle in latitude-longitude space.
+            Empty rectangles have a negative width and height.
             More efficient version of Contains() that accepts a S2LatLng rather than an
             S2Point.
         </member>
@@ -1419,6 +1513,7 @@
             rectangle is at most the given angle.
         </member>
         <member name="M:Google.Common.Geometry.S2LatLngRect.ApproxEquals(Google.Common.Geometry.S2LatLngRect,System.Double)">
+            Return the surface area of this rectangle on the unit sphere. 
             Return true if the latitude and longitude intervals of the two rectangles
             are the same up to the given tolerance (see r1interval.h and s1interval.h
             for details).
@@ -1431,13 +1526,6 @@
         </member>
         <member name="M:Google.Common.Geometry.S2LatLngRect.IntersectsLatEdge(Google.Common.Geometry.S2Point,Google.Common.Geometry.S2Point,System.Double,Google.Common.Geometry.S1Interval)">
             Return true if the edge AB intersects the given edge of constant latitude.
-        </member>
-        <member name="P:Google.Common.Geometry.S2LatLngRect.IsEmpty">
-            Return true if the rectangle is empty, i.e. it contains no points at all.
-        </member>
-        <member name="P:Google.Common.Geometry.S2LatLngRect.IsInverted">
-            Return true if lng_.lo() > lng_.hi(), i.e. the rectangle crosses the 180
-            degree latitude line.
         </member>
         <member name="T:Google.Common.Geometry.S2Loop">
             
@@ -1494,6 +1582,25 @@
         <member name="M:Google.Common.Geometry.S2Loop.#ctor(Google.Common.Geometry.S2Loop)">
             Copy constructor.
         </member>
+        <member name="P:Google.Common.Geometry.S2Loop.IsHole">
+            Return true if this loop represents a hole in its containing polygon.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Loop.Sign">
+            The sign of a loop is -1 if the loop represents a hole in its containing
+            polygon, and +1 otherwise.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Loop.Area">
+            Return the area of the polygon interior, i.e. the region on the left side
+            of an odd number of loops. The return value is between 0 and 4*Pi.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Loop.Centroid">
+            Return the true centroid of the polygon multiplied by the area of the
+            polygon (see {@link S2} for details on centroids). Note that the centroid
+            may not be contained by the polygon.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Loop.RectBound">
+            Return a bounding latitude-longitude rectangle. 
+        </member>
         <member name="M:Google.Common.Geometry.S2Loop.Contains(Google.Common.Geometry.S2Cell)">
             If this method returns true, the region completely contains the given cell.
             Otherwise, either the region does not contain the cell or the containment
@@ -1505,14 +1612,22 @@
             relationship could not be determined.
         </member>
         <member name="M:Google.Common.Geometry.S2Loop.Vertex(System.Int32)">
+             The depth of a loop is defined as its nesting level within its containing
+             polygon. "Outer shell" loops have depth 0, holes within those loops have
+             depth 1, shells within those holes have depth 2, etc. This field is only
+             used by the S2Polygon implementation.
+            
+             @param depth
             For convenience, we make two entire copies of the vertex list available:
             vertex(n..2*n-1) is mapped to vertex(0..n-1), where n == numVertices().
         </member>
         <member name="M:Google.Common.Geometry.S2Loop.InitFirstLogicalVertex">
+            Comparator (needed by Comparable interface)
             Calculates firstLogicalVertex, the vertex in this loop that comes first in
             a total ordering of all vertices (by way of S2Point's compareTo function).
         </member>
         <member name="M:Google.Common.Geometry.S2Loop.Normalize">
+            Return true if the loop area is at most 2*Pi.
             Invert the loop if necessary so that the area enclosed by the loop is at
             most 2*Pi.
         </member>
@@ -1551,6 +1666,7 @@
             purposes.
         </member>
         <member name="M:Google.Common.Geometry.S2Loop.Contains(Google.Common.Geometry.S2Point)">
+            Return a bounding spherical cap. 
             The point 'p' does not need to be normalized.
         </member>
         <member name="M:Google.Common.Geometry.S2Loop.GetDistance(Google.Common.Geometry.S2Point)">
@@ -1566,6 +1682,7 @@
             edge lookups.
         </member>
         <member name="M:Google.Common.Geometry.S2Loop.IsValidLoop(System.Collections.Generic.IEnumerable{Google.Common.Geometry.S2Point})">
+            Return true if this loop is valid. 
              Static version of isValid(), to be used only when an S2Loop instance is not
              available, but validity of the points must be checked.
             
@@ -1588,24 +1705,8 @@
              (returning immediately if any wedge returns -1). Returns +1 if there are no
              intersections and no shared vertices.
         </member>
-        <member name="P:Google.Common.Geometry.S2Loop.IsHole">
-            Return true if this loop represents a hole in its containing polygon.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Loop.Sign">
-            The sign of a loop is -1 if the loop represents a hole in its containing
-            polygon, and +1 otherwise.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Loop.Area">
-            Return the area of the polygon interior, i.e. the region on the left side
-            of an odd number of loops. The return value is between 0 and 4*Pi.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Loop.Centroid">
-            Return the true centroid of the polygon multiplied by the area of the
-            polygon (see {@link S2} for details on centroids). Note that the centroid
-            may not be contained by the polygon.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Loop.RectBound">
-            Return a bounding latitude-longitude rectangle. 
+        <member name="P:Google.Common.Geometry.S2Point.LargestAbsComponent">
+            Return the index of the largest component fabs 
         </member>
         <member name="M:Google.Common.Geometry.S2Point.GetHashCode">
             Calcualates hashcode based on stored coordinates. Since we want +0.0 and
@@ -1620,9 +1721,6 @@
         <member name="M:Google.Common.Geometry.S2Point.ApproxEquals(Google.Common.Geometry.S2Point,System.Double)">
             Compare two vectors, return true if all their components are within a
             difference of margin.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Point.LargestAbsComponent">
-            Return the index of the largest component fabs 
         </member>
         <member name="T:Google.Common.Geometry.S2Polygon">
              An S2Polygon is an SI2Region object that represents a polygon. A polygon
@@ -1662,12 +1760,24 @@
         <member name="M:Google.Common.Geometry.S2Polygon.#ctor(Google.Common.Geometry.S2Polygon)">
             Copy constructor.
         </member>
+        <member name="P:Google.Common.Geometry.S2Polygon.Area">
+            Return the area of the polygon interior, i.e. the region on the left side
+            of an odd number of loops. The return value is between 0 and 4*Pi.
+        </member>
+        <member name="P:Google.Common.Geometry.S2Polygon.Centroid">
+            Return the true centroid of the polygon multiplied by the area of the
+            polygon (see s2.h for details on centroids). Note that the centroid may not
+            be contained by the polygon.
+        </member>
         <member name="M:Google.Common.Geometry.S2Polygon.CompareTo(Google.Common.Geometry.S2Polygon)">
             Comparator (needed by Comparable interface). For two polygons to be
             compared as equal: - the must have the same number of loops; - the loops
             must be ordered in the same way (this is guaranteed by the total ordering
             imposed by sortValueLoops). - loops must be logically equivalent (even if
             ordered with a different starting point, e.g. ABCD and BCDA).
+        </member>
+        <member name="P:Google.Common.Geometry.S2Polygon.RectBound">
+            Return a bounding latitude-longitude rectangle. 
         </member>
         <member name="M:Google.Common.Geometry.S2Polygon.Contains(Google.Common.Geometry.S2Cell)">
             If this method returns true, the region completely contains the given cell.
@@ -1699,6 +1809,11 @@
         </member>
         <!-- Badly formed XML comment ignored for member "M:Google.Common.Geometry.S2Polygon.GetLastDescendant(System.Int32)" -->
         <member name="M:Google.Common.Geometry.S2Polygon.GetDistance(Google.Common.Geometry.S2Point)">
+            Return the area of the polygon interior, i.e. the region on the left side
+            of an odd number of loops (this value return value is between 0 and 4*Pi)
+            and the true centroid of the polygon multiplied by the area of the polygon
+            (see s2.h for details on centroids). Note that the centroid may not be
+            contained by the polygon.
              Returns the shortest distance from a point P to this polygon, given as the
              angle formed between P, the origin and the nearest point on the polygon to
              P. This angle in radians is equivalent to the arclength along the unit
@@ -1740,6 +1855,7 @@
             edge reversals are taken into account).
         </member>
         <member name="M:Google.Common.Geometry.S2Polygon.InitToIntersection(Google.Common.Geometry.S2Polygon,Google.Common.Geometry.S2Polygon)">
+            Returns total number of vertices in all loops.
              Initialize this polygon to the intersection, union, or difference (A - B)
              of the given two polygons. The "vertexMergeRadius" determines how close two
              vertices must be to be merged together and how close a vertex must be to an
@@ -1771,6 +1887,7 @@
             testing purposes.
         </member>
         <member name="M:Google.Common.Geometry.S2Polygon.Contains(Google.Common.Geometry.S2Point)">
+            Return a bounding spherical cap. 
             The point 'p' does not need to be normalized.
         </member>
         <member name="M:Google.Common.Geometry.S2Polygon.AnyLoopContains(Google.Common.Geometry.S2Loop)">
@@ -1788,18 +1905,6 @@
         </member>
         <member name="M:Google.Common.Geometry.S2Polygon.ToString">
             A human readable representation of the polygon
-        </member>
-        <member name="P:Google.Common.Geometry.S2Polygon.Area">
-            Return the area of the polygon interior, i.e. the region on the left side
-            of an odd number of loops. The return value is between 0 and 4*Pi.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Polygon.Centroid">
-            Return the true centroid of the polygon multiplied by the area of the
-            polygon (see s2.h for details on centroids). Note that the centroid may not
-            be contained by the polygon.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Polygon.RectBound">
-            Return a bounding latitude-longitude rectangle. 
         </member>
         <member name="T:Google.Common.Geometry.S2Polygon.ParametrizedS2Point">
             An S2Point that also has a parameter associated with it, which corresponds
@@ -1924,6 +2029,15 @@
             and merge them into a single vertex.
         </member>
         <member name="T:Google.Common.Geometry.S2PolygonBuilder.MarkedS2Point">
+             A PointIndex is a cheap spatial index to help us find mergeable vertices.
+             Given a set of points, it can efficiently find all of the points within a
+             given search radius of an arbitrary query location. It is essentially just
+             a hash map from cell ids at a given fixed level to the set of points
+             contained by that cell id.
+            
+              This class is not suitable for general use because it only supports
+             fixed-radius queries and has various special-purpose operations to avoid
+             the need for additional data structures.
             An S2Point that can be marked. Used in PointIndex.
         </member>
         <member name="M:Google.Common.Geometry.S2PolygonBuilder.PointIndex.GetEnumerator">
@@ -2013,6 +2127,9 @@
             
              TODO(dbeaumont): Now that S2Polyline is immutable, remove this.
         </member>
+        <member name="P:Google.Common.Geometry.S2Polyline.RectBound">
+            Return a bounding latitude-longitude rectangle. 
+        </member>
         <member name="M:Google.Common.Geometry.S2Polyline.Contains(Google.Common.Geometry.S2Cell)">
             If this method returns true, the region completely contains the given cell.
             Otherwise, either the region does not contain the cell or the containment
@@ -2027,12 +2144,15 @@
             Return true if the given vertices form a valid polyline.
         </member>
         <member name="M:Google.Common.Geometry.S2Polyline.Interpolate(System.Double)">
+            Return the angle corresponding to the total arclength of the polyline on a
+            unit sphere.
             Return the point whose distance from vertex 0 along the polyline is the
             given fraction of the polyline's total length. Fractions less than zero or
             greater than one are clamped. The return value is unit length. This cost of
             this function is currently linear in the number of vertices.
         </member>
         <member name="M:Google.Common.Geometry.S2Polyline.GetNearestEdgeIndex(Google.Common.Geometry.S2Point)">
+            Return a bounding spherical cap. 
             Given a point, returns the index of the start point of the (first) edge on
             the polyline that is closest to the given point. The polyline must have at
             least one vertex. Throws IllegalStateException if this is not the case.
@@ -2040,9 +2160,6 @@
         <member name="M:Google.Common.Geometry.S2Polyline.ProjectToEdge(Google.Common.Geometry.S2Point,System.Int32)">
             Given a point p and the index of the start point of an edge of this polyline,
             returns the point on that edge that is closest to p.
-        </member>
-        <member name="P:Google.Common.Geometry.S2Polyline.RectBound">
-            Return a bounding latitude-longitude rectangle. 
         </member>
         <member name="T:Google.Common.Geometry.S2Projections">
              This class specifies the details of how the cube faces are projected onto the
@@ -2141,7 +2258,23 @@
             valid) for the duration of a single GetCovering() call.
         </member>
         <member name="M:Google.Common.Geometry.S2RegionCoverer.#ctor">
+            A temporary variable used by GetCovering() that holds the cell ids that
+            have been added to the covering so far.
             Default constructor, sets all fields to default values.
+        </member>
+        <member name="P:Google.Common.Geometry.S2RegionCoverer.MinLevel">
+            Sets the minimum level to be used.
+        </member>
+        <member name="P:Google.Common.Geometry.S2RegionCoverer.MaxLevel">
+            Sets the maximum level to be used.
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:Google.Common.Geometry.S2RegionCoverer.MaxCells" -->
+        <member name="P:Google.Common.Geometry.S2RegionCoverer.LevelMod">
+            If specified, then only cells where (level - min_level) is a multiple of
+            "level_mod" will be used (default 1). This effectively allows the branching
+            factor of the S2CellId hierarchy to be increased. Currently the only
+            parameter values allowed are 1, 2, or 3, corresponding to branching factors
+            of 4, 16, and 64 respectively.
         </member>
         <member name="M:Google.Common.Geometry.S2RegionCoverer.GetCovering(Google.Common.Geometry.IS2Region,System.Collections.Generic.ICollection{Google.Common.Geometry.S2CellId})">
              Computes a list of cell ids that covers the given region and satisfies the
@@ -2179,6 +2312,7 @@
             it should not be expanded further.
         </member>
         <member name="M:Google.Common.Geometry.S2RegionCoverer.AddCandidate(Google.Common.Geometry.S2RegionCoverer.Candidate)">
+            Return the log base 2 of the maximum number of children of a candidate. 
             Process a candidate by either adding it to the result list or expanding its
             children and inserting it into the priority queue. Passing an argument of
             NULL does nothing.
@@ -2198,20 +2332,6 @@
             Given a region and a starting cell, return the set of all the
             edge-connected cells at the same level that intersect "region". The output
             cells are returned in arbitrary order.
-        </member>
-        <member name="P:Google.Common.Geometry.S2RegionCoverer.MinLevel">
-            Sets the minimum level to be used.
-        </member>
-        <member name="P:Google.Common.Geometry.S2RegionCoverer.MaxLevel">
-            Sets the maximum level to be used.
-        </member>
-        <!-- Badly formed XML comment ignored for member "P:Google.Common.Geometry.S2RegionCoverer.MaxCells" -->
-        <member name="P:Google.Common.Geometry.S2RegionCoverer.LevelMod">
-            If specified, then only cells where (level - min_level) is a multiple of
-            "level_mod" will be used (default 1). This effectively allows the branching
-            factor of the S2CellId hierarchy to be increased. Currently the only
-            parameter values allowed are 1, 2, or 3, corresponding to branching factors
-            of 4, 16, and 64 respectively.
         </member>
     </members>
 </doc>

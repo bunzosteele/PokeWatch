@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web.Script.Serialization;
+using Google.Protobuf;
 using Google.Protobuf.Collections;
 using Pokewatch.Datatypes;
 using Pokewatch.DataTypes;
@@ -15,6 +16,9 @@ using POGOLib.Pokemon.Data;
 using POGOProtos.Enums;
 using POGOProtos.Map;
 using POGOProtos.Map.Pokemon;
+using POGOProtos.Networking.Requests;
+using POGOProtos.Networking.Requests.Messages;
+using POGOProtos.Networking.Responses;
 using Tweetinvi;
 using Tweetinvi.Core.Extensions;
 using Tweetinvi.Models;
@@ -62,15 +66,16 @@ namespace Pokewatch
 				return;
 			}
 
-			if (!PrepareTwitterClient())
-				throw new Exception();
-
-			Log("[+]Sucessfully signed in to twitter.");
 			if (!PrepareClient())
 			{
 				Log("[-]Unable to sign in to PokemonGo.");
 				throw new Exception();
 			}
+
+			if (!PrepareTwitterClient())
+				throw new Exception();
+
+			Log("[+]Sucessfully signed in to twitter.");
 
 			s_pogoSession.AccessTokenUpdated += (sender, eventArgs) =>
 			{
@@ -102,7 +107,6 @@ namespace Pokewatch
 			}
 			s_currentScan = s_scanAreas[s_scanIndex];
 			SetLocation(s_currentScan.Location);
-			Log($"[!]Scanning: {s_currentScan.Name} ({s_currentScan.Location.Latitude}, {s_currentScan.Location.Longitude})");
 		}
 
 		private static bool Search()
@@ -157,6 +161,8 @@ namespace Pokewatch
 					Log("[!]Attempting to sign in to PokemonGo using PTC.");
 					s_pogoSession = Login.GetSession(s_config.PTCUsername, s_config.PTCPassword, LoginProvider.PokemonTrainerClub, s_currentScan.Location.Latitude, s_currentScan.Location.Longitude);
 					Log("[+]Sucessfully logged in to PokemonGo using PTC.");
+					Thread.Sleep(10000);
+					s_pogoSession.Startup();
 					return true;
 				}
 				catch
@@ -171,6 +177,8 @@ namespace Pokewatch
 					Log("[!]Attempting to sign in to PokemonGo using Google.");
 					s_pogoSession = Login.GetSession(s_config.GAUsername, s_config.GAPassword, LoginProvider.GoogleAuth, s_currentScan.Location.Latitude, s_currentScan.Location.Longitude);
 					Log("[+]Sucessfully logged in to PokemonGo using Google.");
+					Thread.Sleep(10000);
+					s_pogoSession.Startup();
 					return true;
 				}
 				catch
@@ -200,7 +208,7 @@ namespace Pokewatch
 			}
 			catch(Exception ex)
 			{
-				Log("[-]Unable to authenticate Twitter account. Check your internet connection, verify your OAuth credential strings. If your bot is new, Twitter may still be validating your application.");
+				Log("[-]Unable to authenticate Twitter account. Check your internet connection, verify your OAuth credential strings. If your bot is new, Twitter may still be validating your application." + ex);
 				return false;
 			}
 			return true;
@@ -293,8 +301,6 @@ namespace Pokewatch
 					tweet += " #" + hashtag.Replace(tag, "");
 			}
 
-			byte[] bytes = Encoding.Default.GetBytes(tweet);
-			tweet = Encoding.UTF8.GetString(bytes);
 			Log("[!]Sucessfully composed tweet.");
 			return tweet;
 		}
