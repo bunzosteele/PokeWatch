@@ -12,7 +12,7 @@ DOWNLOAD: https://db.tt/Mz60B6xo
 ##Set Up Instructions
 1. GETTING THE FILES:
 
-	a. Download and Pokewatch.zip and extract files (https://db.tt/wNDXXmgr).
+	a. Download and Pokewatch.zip and extract files (https://db.tt/6xC2eLL7).
 	
 	b. Alternatively, clone and build the repo.
 	
