@@ -140,6 +140,8 @@ Other: Under this tab, you can tweak the spacing between points for the mass mar
 
 There are a few customization fields that the Configuration Generator does not currently support, you will need to change these in the Configuration.json file by hand: Region Inclusions, Region Exclusions, Pokevision, ExcludedPokemon, PriorityPokemon, MinimumLifeExpectancy, and PokmonOverrides.
 
+Once you have everything set up, click Generate Configuration to get the Configuration.json file. You can also load from a Configuration.json file that you've already made by clicking the Load Configuration btton.
+
 If the location service in your browser is disabled,  LocationGenerator will load a default location every time it is refreshed. If you plan on opening this a lot, consider changing the GPS coordinates on line 37 to something more convenient for you.
 	
 ##Credits
