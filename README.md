@@ -107,12 +107,16 @@ DOWNLOAD: https://db.tt/Mz60B6xo
 6. ENABLE REBOOTING
 
 	PokewatchLauncher.exe will restart pokewatch any time it dies in the middle of running (usually due to server outages). By default on most machines, OS will prompt you to acknowlege the crash before PokewatchLauncher can reset the application, to disable this and allow the app to run indefinitely without supervision, follow this guide: https://www.raymond.cc/blog/disable-program-has-stopped-working-error-dialog-in-windows-server-2008/
-           
-7. RUNNING THE APP
+	
+7. ACCEPTING TOS:
+
+	PokemonGo accounts cannot be used without having first accepted the PokemonGo terms of service. Once your Configuration.json is set up, you should be able to run PokeTos.exe to accept the terms of service for all of your Pokewatch accounts. This program intentionally runs slowly, give it a few seconds.
+	
+8. RUNNING THE APP:
 
 	Run PokewatchLauncher.exe
 	
-8. OPTIONAL:
+9. OPTIONAL:
 
 	a. Due to limitations with the PokemonGo API, any given PokemonGo user can only update their location every 10 seconds,
 	   therefore, it is not recommended to include more than 50 Locations to scan on a single bot.
