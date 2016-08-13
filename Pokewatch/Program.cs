@@ -21,45 +21,72 @@ namespace Pokewatch
 	{
 		public static void Main(string[] args)
 		{
-			Configuration config = ConfigurationManager.ReadConfiguration();
-			if (config == null)
-				return;
+			if (args.Length < 2)
+			{
+				PokewatchLogger.Log("[-]Missing Arguments. Indeces of account and regions must be specified.", "PokewatchUnknown");
+				Environment.Exit(2);
+			}
+			s_config = ConfigurationManager.ReadConfiguration("Pokewatch");
+			if (s_config == null)
+				Environment.Exit(2);
+			try
+			{
+				s_account = s_config.PoGoAccounts[int.Parse(args[0])];
+				for (int i = 1; i < args.Length; i++)
+				{
+					s_regions.Add(s_config.Regions[int.Parse(args[i])]);
+				}
+			}
+			catch
+			{
+				PokewatchLogger.Log("[-]Arguments do not align with provided configuration: " + string.Join(" ", args), "PokewatchUnknown");
+				Environment.Exit(2);
+			}
 
 			try
 			{
-				s_scanAreas = s_config.Regions.SelectMany(r => r.Locations.Select(l => new ScanArea
+				s_scanAreas = s_regions.SelectMany(r => r.Locations.Select(l => new ScanArea
 				{
 					Location = l,
 					Name = r.Name,
 					Prefix = r.Prefix,
-					Suffix = r.Suffix
+					Suffix = r.Suffix,
+					Inclusions = r.Inclusions,
+					Exclusions = r.Exclusions
 				})).ToList();
 				s_currentScan = s_scanAreas.First();
 				s_scanIndex = 0;
 			}
 			catch
 			{
-				PokewatchLogger.Log("[-]Invalid Region Configuration");
-				return;
+				PokewatchLogger.Log("[-]Invalid Region Configuration", AccountManager.GetAccountName(s_account));
+				Environment.Exit(2);
 			}
 
-			s_pogoSession = AccountManager.SignIn(config.PoGoAccounts.First(), s_currentScan.Location);
-			Thread.Sleep(10000);
-			s_pogoSession.Startup();
+			Console.Title = AccountManager.GetAccountName(s_account) + ": " + string.Join(", ", s_regions.Select(r => r.Name));
+
+			s_pogoSession = AccountManager.SignIn(s_account, s_currentScan.Location);
+			if (s_pogoSession == null)
+			{
+				PokewatchLogger.Log("[-]Unable to sign in to PokemonGo.", AccountManager.GetAccountName(s_account));
+				Environment.Exit(3);
+			}
 
 			if (!PrepareTwitterClient())
-				throw new Exception();
+				Environment.Exit(4);
 
-			PokewatchLogger.Log("[+]Sucessfully signed in to twitter.");
+			PokewatchLogger.Log("[+]Sucessfully signed in to twitter.", AccountManager.GetAccountName(s_account));
+
+			s_pogoSession.Startup();
 
 			s_pogoSession.AccessTokenUpdated += (sender, eventArgs) =>
 			{
-				PokewatchLogger.Log("[+]Access token updated.");
+				PokewatchLogger.Log("[+]Access token updated.", AccountManager.GetAccountName(s_account));
 			};
 
 			s_pogoSession.Map.Update += (sender, eventArgs) =>
 			{
-				PokewatchLogger.Log("[+]Location Acknowleged. Searching...");
+				PokewatchLogger.Log("[+]Location Acknowleged. Searching...", AccountManager.GetAccountName(s_account));
 				if (Search())
 					UpdateLocation();
 			};
@@ -78,8 +105,10 @@ namespace Pokewatch
 			if (s_scanIndex == s_scanAreas.Count)
 			{
 				s_scanIndex = 0;
-				PokewatchLogger.Log("[!]All Regions Scanned. Starting over.");
+				PokewatchLogger.Log("[!]All Regions Scanned. Starting over.", AccountManager.GetAccountName(s_account));
 			}
+			if(s_currentScan == null || s_currentScan.Name != s_scanAreas[s_scanIndex].Name)
+				PokewatchLogger.Log("[!]Scanning new region: " + s_scanAreas[s_scanIndex].Name, AccountManager.GetAccountName(s_account));
 			s_currentScan = s_scanAreas[s_scanIndex];
 			SetLocation(s_currentScan.Location);
 		}
@@ -103,18 +132,18 @@ namespace Pokewatch
 
 					if (Tweet.Length(tweet) > 140)
 					{
-						PokewatchLogger.Log("[-]Tweet exceeds 140 characters. Consider changing your template: " + tweet);
+						PokewatchLogger.Log("[-]Tweet exceeds 140 characters. Consider changing your template: " + tweet, AccountManager.GetAccountName(s_account));
 						continue;
 					}
 					try
 					{
 						s_twitterClient.PublishTweet(tweet);
-						PokewatchLogger.Log("[+]Tweet published: " + tweet);
+						PokewatchLogger.Log("[+]Tweet published: " + tweet, AccountManager.GetAccountName(s_account));
 						s_lastTweet = DateTime.Now;
 					}
 					catch (Exception ex)
 					{
-						PokewatchLogger.Log("[-]Tweet failed to publish: " + tweet + " " + ex.Message);
+						PokewatchLogger.Log("[-]Tweet failed to publish: " + tweet + " " + ex.Message, AccountManager.GetAccountName(s_account));
 					}
 
 					s_tweetedPokemon.Enqueue(foundPokemon);
@@ -132,11 +161,11 @@ namespace Pokewatch
 			if (s_config.TwitterConsumerToken.IsNullOrEmpty() || s_config.TwitterConsumerSecret.IsNullOrEmpty()
 				|| s_config.TwitterAccessToken.IsNullOrEmpty() || s_config.TwitterConsumerSecret.IsNullOrEmpty())
 			{
-				PokewatchLogger.Log("[-]Must supply Twitter OAuth strings.");
+				PokewatchLogger.Log("[-]Must supply Twitter OAuth strings.", AccountManager.GetAccountName(s_account));
 				return false;
 			}
 
-			PokewatchLogger.Log("[!]Signing in to Twitter.");
+			PokewatchLogger.Log("[!]Signing in to Twitter.", AccountManager.GetAccountName(s_account));
 			var userCredentials = Auth.CreateCredentials(s_config.TwitterConsumerToken, s_config.TwitterConsumerSecret, s_config.TwitterAccessToken, s_config.TwitterAccessSecret);
 			ExceptionHandler.SwallowWebExceptions = false;
 			try
@@ -145,7 +174,7 @@ namespace Pokewatch
 			}
 			catch(Exception ex)
 			{
-				PokewatchLogger.Log("[-]Unable to authenticate Twitter account. Check your internet connection, verify your OAuth credential strings. If your bot is new, Twitter may still be validating your application." + ex);
+				PokewatchLogger.Log("[-]Unable to authenticate Twitter account." + ex, AccountManager.GetAccountName(s_account));
 				return false;
 			}
 			return true;
@@ -153,7 +182,7 @@ namespace Pokewatch
 
 		private static void SetLocation(Location location)
 		{
-			PokewatchLogger.Log($"[!]Setting location to {location.Latitude},{location.Longitude}");
+			PokewatchLogger.Log($"[!]Setting location to {location.Latitude},{location.Longitude}", AccountManager.GetAccountName(s_account));
 			s_pogoSession.Player.SetCoordinates(location.Latitude, location.Longitude);
 		}
 
@@ -167,38 +196,38 @@ namespace Pokewatch
 				LifeExpectancy = pokemon.TimeTillHiddenMs / 1000
 			};
 
-			if (s_config.ExcludedPokemon.Contains(foundPokemon.Kind))
+			if ((s_config.ExcludedPokemon.Contains(foundPokemon.Kind) && !(s_currentScan.Inclusions != null && s_currentScan.Inclusions.Contains(foundPokemon.Kind))) || (s_currentScan.Exclusions != null && s_currentScan.Exclusions.Contains(foundPokemon.Kind)))
 			{
-				PokewatchLogger.Log($"[!]Excluded: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				PokewatchLogger.Log($"[!]Excluded: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}", AccountManager.GetAccountName(s_account));
 				return null;
 			}
 
-			if (foundPokemon.LifeExpectancy < s_config.MinimumLifeExpectancy)
+			if (foundPokemon.LifeExpectancy < s_config.MinimumLifeExpectancy || foundPokemon.LifeExpectancy > 1000)
 			{
-				PokewatchLogger.Log($"[!]Expiring: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				PokewatchLogger.Log($"[!]Expiring: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}", AccountManager.GetAccountName(s_account));
 				return null;
 			}
 
 			if (alreadyFound.Contains(foundPokemon))
 			{
-				PokewatchLogger.Log($"[!]Duplicate: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				PokewatchLogger.Log($"[!]Duplicate: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}", AccountManager.GetAccountName(s_account));
 				return null;
 			}
 
 			if ((lastTweet + TimeSpan.FromSeconds(s_config.RateLimit) > DateTime.Now) && !s_config.PriorityPokemon.Contains(foundPokemon.Kind))
 			{
-				PokewatchLogger.Log($"[!]Limiting: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+				PokewatchLogger.Log($"[!]Limiting: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}", AccountManager.GetAccountName(s_account));
 				return null;
 			}
 
-			PokewatchLogger.Log($"[!]Tweeting: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}");
+			PokewatchLogger.Log($"[!]Tweeting: {foundPokemon.Kind} ({foundPokemon.LifeExpectancy} seconds): {Math.Round(foundPokemon.Location.Latitude, 6)},{Math.Round(foundPokemon.Location.Longitude, 6)}", AccountManager.GetAccountName(s_account));
 			return foundPokemon;
 		}
 
 		//Build a tweet with useful information about the pokemon, then cram in as many hashtags as will fit.
 		private static string ComposeTweet(FoundPokemon pokemon)
 		{
-			PokewatchLogger.Log("[!]Composing Tweet");
+			PokewatchLogger.Log("[!]Composing Tweet.", AccountManager.GetAccountName(s_account));
 			string latitude = pokemon.Location.Latitude.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-us"));
 			string longitude = pokemon.Location.Longitude.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-us"));
 			string mapsLink = s_config.Pokevision ? $"https://pokevision.com/#/@{latitude},{longitude}" : $"https://www.google.com/maps/place/{latitude},{longitude}";
@@ -217,7 +246,7 @@ namespace Pokewatch
 			}
 			catch
 			{
-				PokewatchLogger.Log("[-]Failed to format tweet. If you made customizations, they probably broke it.");
+				PokewatchLogger.Log("[-]Failed to format tweet. If you made customizations, they probably broke it.", AccountManager.GetAccountName(s_account));
 				return null;
 			}
 
@@ -238,7 +267,7 @@ namespace Pokewatch
 					tweet += " #" + hashtag.Replace(tag, "");
 			}
 
-			PokewatchLogger.Log("[!]Sucessfully composed tweet.");
+			PokewatchLogger.Log("[!]Sucessfully composed tweet.", AccountManager.GetAccountName(s_account));
 			return tweet;
 		}
 
@@ -272,6 +301,8 @@ namespace Pokewatch
 		}
 
 		private static Configuration s_config;
+		private static PoGoAccount s_account;
+		private static List<Region> s_regions = new List<Region>();
 		private static IAuthenticatedUser s_twitterClient;
 		private static Session s_pogoSession;
 		private static DateTime s_lastTweet = DateTime.MinValue;

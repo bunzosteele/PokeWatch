@@ -14,9 +14,9 @@ namespace PogoTos
 	{
 		static void Main(string[] args)
 		{
-			PokewatchLogger.Log("[!]Launching ToS acceptance script.");
-			PokewatchLogger.Log("[!]It is very important that you overlook the irony of a bot accepting an agreement to not use bots.");
-			Configuration config = ConfigurationManager.ReadConfiguration();
+			PokewatchLogger.Log("[!]Launching ToS acceptance script.", "ToS");
+			PokewatchLogger.Log("[!]It is very important that you overlook the irony of a bot accepting an agreement to not use bots.", "ToS");
+			Configuration config = ConfigurationManager.ReadConfiguration("ToS");
 			if (config == null)
 				return;
 
@@ -33,7 +33,7 @@ namespace PogoTos
 			}
 			catch
 			{
-				PokewatchLogger.Log("[-]Invalid Region Configuration");
+				PokewatchLogger.Log("[-]Invalid Region Configuration", "ToS");
 				return;
 			}
 
@@ -43,12 +43,12 @@ namespace PogoTos
 				Session session = AccountManager.SignIn(account, defaultLocation);
 				if (session == null)
 				{
-					PokewatchLogger.Log("[-]Authentication failed for " + AccountManager.GetAccountName(account));
+					PokewatchLogger.Log("[-]Authentication failed for " + AccountManager.GetAccountName(account), "ToS");
 					continue;
 				}
 				Thread.Sleep(10000);
 				session.Startup();
-				PokewatchLogger.Log("[!]Attempting to Accept ToS.");
+				PokewatchLogger.Log("[!]Attempting to Accept ToS.", "ToS");
 				Thread.Sleep(10000);
 				var acceptTosRaw = session.RpcClient.SendRemoteProcedureCall(new Request
 				{
@@ -64,11 +64,11 @@ namespace PogoTos
 				var acceptTos = MarkTutorialCompleteResponse.Parser.ParseFrom(acceptTosRaw);
 				if (acceptTos.Success)
 				{
-					PokewatchLogger.Log("[+]ToS accepted.");
+					PokewatchLogger.Log("[+]ToS accepted.", "ToS");
 				}
 				else
 				{
-					PokewatchLogger.Log("[!]Unable to accept Tos.");
+					PokewatchLogger.Log("[!]Unable to accept Tos.", "ToS");
 				}
 			}
 		}
