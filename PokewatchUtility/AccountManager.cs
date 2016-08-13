@@ -52,5 +52,10 @@ namespace PokewatchUtility
 			}
 			return null;
 		}
+
+		public static string GetAccountName(PoGoAccount account)
+		{
+			return !account.PTCUsername.IsNullOrEmpty() ? account.PTCUsername : account.GAUsername;
+		}
 	}
 }

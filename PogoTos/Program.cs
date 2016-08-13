@@ -14,6 +14,8 @@ namespace PogoTos
 	{
 		static void Main(string[] args)
 		{
+			PokewatchLogger.Log("[!]Launching ToS acceptance script.");
+			PokewatchLogger.Log("[!]It is very important that you overlook the irony of a bot accepting an agreement to not use bots.");
 			Configuration config = ConfigurationManager.ReadConfiguration();
 			if (config == null)
 				return;
@@ -39,6 +41,11 @@ namespace PogoTos
 			{
 				Thread.Sleep(10000);
 				Session session = AccountManager.SignIn(account, defaultLocation);
+				if (session == null)
+				{
+					PokewatchLogger.Log("[-]Authentication failed for " + AccountManager.GetAccountName(account));
+					continue;
+				}
 				Thread.Sleep(10000);
 				session.Startup();
 				PokewatchLogger.Log("[!]Attempting to Accept ToS.");
