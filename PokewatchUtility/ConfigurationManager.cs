@@ -7,9 +7,9 @@ namespace PokewatchUtility
 {
 	public class ConfigurationManager
 	{
-		public static Configuration ReadConfiguration(string fileName = "Configuration.json")
+		public static Configuration ReadConfiguration(string signature, string fileName = "Configuration.json")
 		{
-			PokewatchLogger.Log("[!]Reading configuration from " + fileName + ".");
+			PokewatchLogger.Log("[!]Reading configuration from " + fileName + ".", signature);
 			Configuration config;
 			try
 			{
@@ -18,8 +18,8 @@ namespace PokewatchUtility
 			}
 			catch (Exception ex)
 			{
-				PokewatchLogger.Log("[-]Unable to load config.");
-				PokewatchLogger.Log(ex.Message);
+				PokewatchLogger.Log("[-]Unable to load config.", signature);
+				PokewatchLogger.Log(ex.Message, signature);
 				return null;
 			}
 			return config;

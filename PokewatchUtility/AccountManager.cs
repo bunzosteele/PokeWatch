@@ -18,7 +18,7 @@ namespace PokewatchUtility
 		{
 			if ((account.PTCUsername.IsNullOrEmpty() || account.PTCPassword.IsNullOrEmpty()) && (account.GAPassword.IsNullOrEmpty() || account.GAUsername.IsNullOrEmpty()))
 			{
-				PokewatchLogger.Log("[-]Username and password must be supplied for either PTC or Google.");
+				PokewatchLogger.Log("[-]Username and password must be supplied for either PTC or Google.", GetAccountName(account));
 				return null;
 			}
 
@@ -26,28 +26,28 @@ namespace PokewatchUtility
 			{
 				try
 				{
-					PokewatchLogger.Log("[!]Attempting to sign in to PokemonGo as " + account.PTCUsername + " using PTC.");
+					PokewatchLogger.Log("[!]Attempting to sign in to PokemonGo as " + account.PTCUsername + " using PTC.", GetAccountName(account));
 					var pogoSession = Login.GetSession(account.PTCUsername, account.PTCPassword, LoginProvider.PokemonTrainerClub, defaultLocation.Latitude, defaultLocation.Longitude);
-					PokewatchLogger.Log("[+]Sucessfully logged in to PokemonGo using PTC.");
+					PokewatchLogger.Log("[+]Sucessfully logged in to PokemonGo using PTC.", GetAccountName(account));
 					return pogoSession;
 				}
 				catch
 				{
-					PokewatchLogger.Log("[-]Unable to log in using PTC.");
+					PokewatchLogger.Log("[-]Unable to log in using PTC.", GetAccountName(account));
 				}
 			}
 			if (!account.GAUsername.IsNullOrEmpty() && !account.GAPassword.IsNullOrEmpty())
 			{
 				try
 				{
-					PokewatchLogger.Log("[!]Attempting to sign in to PokemonGo as " + account.GAUsername + " using Google.");
+					PokewatchLogger.Log("[!]Attempting to sign in to PokemonGo as " + account.GAUsername + " using Google.", GetAccountName(account));
 					var pogoSession = Login.GetSession(account.GAUsername, account.GAPassword, LoginProvider.GoogleAuth, defaultLocation.Latitude, defaultLocation.Longitude);
-					PokewatchLogger.Log("[+]Sucessfully logged in to PokemonGo using Google.");
+					PokewatchLogger.Log("[+]Sucessfully logged in to PokemonGo using Google.", GetAccountName(account));
 					return pogoSession;
 				}
 				catch
 				{
-					PokewatchLogger.Log("[-]Unable to log in using Google.");
+					PokewatchLogger.Log("[-]Unable to log in using Google.", GetAccountName(account));
 				}
 			}
 			return null;
@@ -55,7 +55,7 @@ namespace PokewatchUtility
 
 		public static string GetAccountName(PoGoAccount account)
 		{
-			return !account.PTCUsername.IsNullOrEmpty() ? account.PTCUsername : account.GAUsername;
+			return (!account.PTCUsername.IsNullOrEmpty() ? account.PTCUsername : account.GAUsername).Split('@')[0];
 		}
 	}
 }
