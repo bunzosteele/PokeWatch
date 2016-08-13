@@ -553,7 +553,7 @@
 		<div class="container" id="menu" style="max-height:100vh;overflow-y:auto;autoflow-x:hidden;">
 			<ul class="collapsible popout" data-collapsible="accordion">
 				<li>
-					<div class="collapsible-header"><i class="material-icons">supervisor_account</i>Pokemon GO Account's</div>
+					<div class="collapsible-header"><i class="material-icons">supervisor_account</i>Pokemon GO Accounts</div>
 					<div class="collapsible-body">
 						<ul class="collapsible" data-collapsible="accordion">
 							<li ng-repeat="account in configuration.PoGoAccounts">
@@ -622,12 +622,11 @@
 										<input autocomplete="off" ng-placeholder=" - " id="Prefix" type="text" ng-model="area.Suffix">
 										<label for="Prefix" class="active">Suffix</label>
 									</div>
-									<p>Time to Scan: {{ (((area.Locations.length + area.Markers.length) * scanTime) / configuration.PoGoAccounts.length).toString().toHHMMSS() }}</p>
+									<p>Estimated Time to Scan: {{ ((area.Locations.length + area.Markers.length) * scanTime).toString().toHHMMSS() }}</p>
 									<a class="waves-effect waves-light btn red" data-ng-click="RemoveArea()">Remove</a>
 								</div>
 							</li>
 						</ul>
-						<p class="center"><strong>Total Scan Time: {{ ((getTotal() * scanTime) / configuration.PoGoAccounts.length).toString().toHHMMSS() }}</strong></p>
 						<a class="waves-effect waves-light btn blue-grey darken-4" data-ng-click="AddArea()">Add Area</a>
 					</div>
 				</li>
