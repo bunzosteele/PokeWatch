@@ -276,41 +276,6 @@
 			/*****************
 			******BUTTONS*****
 			*****************/
-			//Save Button
-			$scope.save = function() {
-				$.each($scope.configuration.Regions,function(i,v){
-					$.each(v.Markers,function(n,mark){
-						v.Locations.push({
-							"Latitude": mark.center.lat(),
-							"Longitude": mark.center.lng()
-						});
-						mark.setMap(null);
-					});
-					v.Markers = [];
-				});
-				localStorage.setItem("Configuration",JSON.stringify($scope.configuration,function( key, value ) {
-					if( key === "$$hashKey" ) {
-						return undefined;
-					}
-					return value;
-				}));
-			}
-			$scope.setLocation = function(){
-				$scope.save();
-				$.each($scope.configuration.Regions,function(i,v){
-					$.each(v.Locations,function(n,loc){
-						if (i == 0 && n == 0){
-							map.setCenter({"lat":loc.Latitude,"lng":loc.Longitude});
-						}
-						$scope.addNewMarker(loc.Latitude,loc.Longitude,i);
-					});
-					v.Locations = [];
-				});
-				try{
-					Materialize.updateTextFields();
-					$scope.$apply();
-				}catch(err){}
-			};
 			//Download Button
 			$scope.download = function(){
 				$scope.setLocation();
@@ -399,11 +364,6 @@
 					}
 				}
 			});
-			//Revert Button
-			$scope.revert = function() {
-				localStorage.removeItem("Configuration");
-				location.reload();
-			}
 		});
 		</script>
 		<style type="text/css">
@@ -683,10 +643,8 @@
 					</div>
 				</li>
 			</ul>
-			<a class="waves-effect waves-light btn green" ng-click="setLocation()">Save</a>
-			<a class="waves-effect waves-light btn blue" ng-click="download()">Download Config</a>
-			<a class="waves-effect waves-light btn orange" ng-click="loadFile()">Import Config</a>
-			<a class="waves-effect waves-light btn red" ng-click="revert()">Revert</a>
+			<a class="waves-effect waves-light btn blue" ng-click="download()">Generate Config</a>
+			<a class="waves-effect waves-light btn orange" ng-click="loadFile()">Load Config</a>
 		</div>
 		<div class="formDiv" id="map_canvas"></div>
 		<div class="mapmenu cmenu">
