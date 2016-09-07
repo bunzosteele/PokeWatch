@@ -7,7 +7,7 @@ Other known bots running Pokewatch: https://twitter.com/BhamPokeWatch/lists/poke
 
 Subreddit: https://reddit.com/r/pokewatch
 
-DOWNLOAD: https://db.tt/Mz60B6xo
+DOWNLOAD: https://github.com/bunzosteele/PokeWatch/releases
 
 ##Set Up Instructions
 1. GETTING THE FILES:
